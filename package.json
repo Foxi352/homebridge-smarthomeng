@@ -7,11 +7,11 @@
     "homebridge-plugin"
   ],
   "repository": {
-    "type": "git",
-    "url": "git://github.com/example/homebridge.git"
+    "type": "https",
+    "url": "https://github.com/Foxi352/homebridge-smarthomeng.git"
   },
   "bugs": {
-    "url": "http://github.com/example/homebridge/issues"
+    "url": "https://github.com/Foxi352/homebridge-smarthomeng/issues"
   },
   "engines": {
     "node": ">=0.12.0",
