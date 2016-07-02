@@ -1,7 +1,11 @@
-#Attention: This software is not yet ready, it is in alpha state !!! Do not use it yet !!!
+#Attention: This software is not ready for production use, consider it being in alpha state !!!
 
 #homebridge-smarthomeng
 Homebridge plugin for SmartHomeNG
+##Currently supported
+This plugin currently supports:
+* LightBulb with on/off and brightness characteristic
+* Window Covering with currentposition and targetposition characteristic (state not yet supported)
 ##Requirements
 SmartHomeNG: https://github.com/smarthomeNG/smarthome
 homebridge: https://www.npmjs.com/package/homebridge
@@ -40,20 +44,15 @@ This is an example config file which just uses this plugin and some example Smar
             "host": "myshngserver.mydomain",
             "accessories": [
                 {
-                    "name": "Bureaulicht",
+                    "name": "Licht Büro",
                     "type": "Lightbulb",
                     "onoff": "EG.Buero.Licht"
                 },
                 {
-                    "name": "Stubenlicht",
-                    "type": "Lightbulb",
-                    "onoff": "EG.Stube.Licht"
-                },
-                {
-                    "name": "Schlafzimmerlicht",
-                    "type": "Lightbulb",
-                    "onoff": "OG.SZSS.Licht",
-                    "brightness": "OG.SZSS.Licht.dimmen"
+                    "name": "Rollladen Büro",
+                    "type": "WindowCovering",
+                    "currentposition": "EG.Buero.Rolladen.Position",
+                    "targetposition": "EG.Buero.Rolladen.Position"
                 }
 
             ]

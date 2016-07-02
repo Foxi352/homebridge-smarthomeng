@@ -22,7 +22,7 @@ function SmartHomeNGPlatform(log, config, api) {
     this.log = log;
     this.config = config;
     this.accessoriesCache = [];
-    this.supportedFunctions = ['onoff', 'brightness'];
+    this.supportedFunctions = ['onoff', 'brightness', 'currentposition', 'targetposition'];
   
     if (this.config["host"] != undefined) {
         this.shng_host = this.config["host"];
@@ -44,10 +44,6 @@ function SmartHomeNGPlatform(log, config, api) {
   
   if (api) {
       this.api = api;
- 
-      // Listen to event "didFinishLaunching", this means homebridge already finished loading cached accessories
-      // Platform Plugin should only register new accessory that doesn't exist in homebridge after this event.
-      // Or start discover new accessories
       this.api.on('didFinishLaunching', function() {
         this.log("Finished loading " + this.accessoriesCache.length + " accessories");
         // Add supported SHNG items to monitoring
@@ -56,7 +52,9 @@ function SmartHomeNGPlatform(log, config, api) {
             var device = this.accessoriesCache[i].device;
             for (var key in device) {
                 if (this.supportedFunctions.indexOf(key) >= 0) {
-                    tomonitor.push(device[key]);
+                    if(tomonitor.indexOf(device[key]) == -1) {
+                        tomonitor.push(device[key]);
+                    }  
                 }
             }
         }
@@ -74,6 +72,7 @@ function SmartHomeNGAccessory(log, device, shngcon) {
     this.log = log;
     this.shngcon = shngcon;
     this.value = undefined;
+    this.manufacturername = 'SmartHomeNG';
     /*this.log("CONSTRUCTOR: ");
     this.log(device);
     this.log("------")*/
@@ -97,7 +96,6 @@ SmartHomeNGPlatform.prototype = {
         }
         
         //this.log(foundAccessories)
-        this.accessoriesCounter = foundAccessories.length;
         this.accessoriesCache = foundAccessories;
         callback(foundAccessories);
     },
@@ -105,13 +103,21 @@ SmartHomeNGPlatform.prototype = {
     update: function (item, value) {
         //this.log("CALLBACK: item " + item + " with value " + value);
         for (i = 0; i < this.platform.accessoriesCache.length; i++) {
-            accessory = this.platform.accessoriesCache[i].device;
+            accessory = this.platform.accessoriesCache[i];
+            //this.log(this.platform);
             // loop through accessories and services to find modified one
-            for (var key in accessory) {
-                if (accessory[key] == item) {
-                    this.log("Updating item '" + item + "' with value " + value);
-                    accessory[key + '_value'] = value;
-                    break;
+            for (var key in accessory.device) {
+                if (accessory.device[key] == item) {
+                    this.log("Updating item '" + item + "' characteristic " + key + " with value " + value);
+                    accessory.device[key + '_value'] = value;
+                    myCharacteristic = Characteristic.On;
+                    //accessory.getService(Service.Lightbulb).getCharacteristic(myCharacteristic).setValue(value);
+                    //this.log(this);
+                    // var myService = accessory.getService(Service.Lightbulb)
+                    // var myCharacteristic = myService.getCharacteristic(characteristicType);
+                    // Characteristic.On - Characteristic.Brightness
+                    // myCharacteristic.setValue(defaultValue);
+                    //break;
                 }
             }
         }
@@ -163,6 +169,25 @@ SmartHomeNGAccessory.prototype = {
                 }
                 break;
             
+            case 'windowcovering':
+                var myService = new Service.WindowCovering(this.name);
+                // Current position characteristic
+                if (this.device.currentposition) {
+                    this.log("Adding 'CurrentPosition' characteristic to " + this.name);     
+                    myService
+                        .getCharacteristic(Characteristic.CurrentPosition)
+                        .on('get', function(callback) { that.getValue("currentposition", callback);});
+                }
+                // Target position characteristic
+                if (this.device.targetposition) {
+                    this.log("Adding 'TargetPosition' characteristic to " + this.name);     
+                    myService
+                        .getCharacteristic(Characteristic.TargetPosition)
+                        .on('get', function(callback) { that.getValue("targetposition", callback);})
+                        .on('set', function(value, callback) { that.setValue("targetposition", value, callback);});
+                }
+                break;
+            
             // If no supported type is found warn user and return empty services
             default:
                 this.log("Ignoring '" + this.name + "' because device type '" + this.device.type + "' is not supported !");
@@ -176,14 +201,17 @@ SmartHomeNGAccessory.prototype = {
             .setCharacteristic(Characteristic.Manufacturer, this.manufacturername)
             .setCharacteristic(Characteristic.Model, this.model)
             .setCharacteristic(Characteristic.SerialNumber, this.device.uniqueid);
-    
-        return [informationService, myService];
+        MyServices = [informationService, myService];
+        //this.toto = MyServices;
+        return MyServices;
     },
 
     // Get value
     getValue: function(characteristic, callback) {
         this.log("Get value for " + this.device.name + ", characteristic: " + characteristic + ".");
-        //this.log(this.device);
+        this.log(this.device);
+        if (characteristic == 'CurrentPosition') { characteristic = 'position'};
+        this.log("Looking for " + characteristic + "_value");
         if (this.device[characteristic + "_value"] != undefined) {
             this.log("Found value '" + this.device[characteristic + "_value"] + "' for '" + characteristic + "' of device '" + this.device.name + "'.");
             if (callback) callback(null, this.device[characteristic + "_value"]);
@@ -208,5 +236,6 @@ SmartHomeNGAccessory.prototype = {
     // Respond to identify request
     identify: function(callback) { 
         this.log("Identify request for '" + this.device.name + "'.");
+        callback();
     }
 }
