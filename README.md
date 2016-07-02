@@ -6,6 +6,7 @@ Homebridge plugin for SmartHomeNG
 This plugin currently supports:
 * LightBulb with on/off and brightness characteristic
 * Window Covering with currentposition and targetposition characteristic (state not yet supported)
+
 ##Requirements
 SmartHomeNG: https://github.com/smarthomeNG/smarthome
 homebridge: https://www.npmjs.com/package/homebridge

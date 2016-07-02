@@ -108,8 +108,12 @@ SmartHomeNGPlatform.prototype = {
             // loop through accessories and services to find modified one
             for (var key in accessory.device) {
                 if (accessory.device[key] == item) {
-                    this.log("Updating item '" + item + "' characteristic " + key + " with value " + value);
-                    accessory.device[key + '_value'] = value;
+                    var myValue = value;
+                    if (accessory.device.type == 'WindowCovering' && accessory.device.inverted) {
+                        myValue = 100 - value;
+                    }
+                    this.log("Updating item '" + item + "' characteristic " + key + " with value " + myValue);
+                    accessory.device[key + '_value'] = myValue;
                     myCharacteristic = Characteristic.On;
                     //accessory.getService(Service.Lightbulb).getCharacteristic(myCharacteristic).setValue(value);
                     //this.log(this);
@@ -185,6 +189,13 @@ SmartHomeNGAccessory.prototype = {
                         .getCharacteristic(Characteristic.TargetPosition)
                         .on('get', function(callback) { that.getValue("targetposition", callback);})
                         .on('set', function(value, callback) { that.setValue("targetposition", value, callback);});
+
+                    this.log("Adding 'PositionState' characteristic to " + this.name);     
+                    myService
+                        .getCharacteristic(Characteristic.PositionState)
+                        .on('get', function(callback) { that.getValue("positionstate", callback);})
+                        .setValue(1);
+                    this.device.positionstate_value = 2;
                 }
                 break;
             
@@ -210,13 +221,13 @@ SmartHomeNGAccessory.prototype = {
     getValue: function(characteristic, callback) {
         this.log("Get value for " + this.device.name + ", characteristic: " + characteristic + ".");
         this.log(this.device);
-        if (characteristic == 'CurrentPosition') { characteristic = 'position'};
+        //if (characteristic == 'CurrentPosition') { characteristic = 'position'};
         this.log("Looking for " + characteristic + "_value");
         if (this.device[characteristic + "_value"] != undefined) {
             this.log("Found value '" + this.device[characteristic + "_value"] + "' for '" + characteristic + "' of device '" + this.device.name + "'.");
             if (callback) callback(null, this.device[characteristic + "_value"]);
         } else {
-            if (callback) callback("Oh oh :-(");
+            if (callback) callback();
         }
         
     },
@@ -224,6 +235,24 @@ SmartHomeNGAccessory.prototype = {
     // Set value
     setValue: function(characteristic, value, callback) {
         this.log("Set " + this.device.name + ", characteristic: " + characteristic + ", value: " + value + ".");
+
+        // some special treatment for shutters
+        if (this.device.type == 'WindowCovering') {
+            if (characteristic == 'targetposition') {
+                // if 0% or 100% use open / close actions if available
+                if(this.device.updown != undefined && (value == 0 || value == 100)) {
+                    characteristic = 'updown';                   
+                    if(value == 100) value = 0;
+                    else value = 1;
+                }
+                // For HomeKit 0% is closed. User can invert this beheavior as KNX for example is the opposite.
+                if (this.device.inverted) {
+                    value = 100 - value;
+                } 
+            } 
+        }
+
+
         // If item for characteristic exists then send value to it
         if (this.device[characteristic] != undefined) {
             this.shngcon.setValue(this.device[characteristic], value);
