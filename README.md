@@ -2,29 +2,34 @@
 
 #homebridge-smarthomeng
 Homebridge plugin for SmartHomeNG
+
 ##Currently supported
 This plugin currently supports:
 * LightBulb with on/off and brightness characteristic
 * Window Covering with currentposition and targetposition characteristic (state not yet supported)
 
 ##Requirements
-SmartHomeNG: https://github.com/smarthomeNG/smarthome
-homebridge: https://www.npmjs.com/package/homebridge
+* SmartHomeNG: https://github.com/smarthomeNG/smarthome
+* homebridge: https://www.npmjs.com/package/homebridge
+
 ##Installation
 Install nodejs >= 0.12. You have to find out the right way for your OS. The following commands have been tested on Debian Jessie.
 <pre>
 curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
 sudo apt-get install -y nodejs
 </pre>
+
 Install homebridge from NPM repository
 <pre>
 npm install -g homebridge
 </pre>
+
 Install this plugin from NPM repository
 *** ATTENTION: NOT YET PUBLISHED ***
 <pre>
 npm install -g homebridge-smarthomeng
 </pre>
+
 ##Configuration
 You have to create a config.json in .homebridge directory. You'll find that directory in your home folder.
 This is an example config file which just uses this plugin and some example SmartHomeNG items.
@@ -50,12 +55,13 @@ This is an example config file which just uses this plugin and some example Smar
                     "onoff": "EG.Buero.Licht"
                 },
                 {
-                    "name": "Rollladen Büro",
+                    "name": "Rolladen Büro",
                     "type": "WindowCovering",
+                    "updown": "EG.Buero.Rolladen.AufAb",
                     "currentposition": "EG.Buero.Rolladen.Position",
-                    "targetposition": "EG.Buero.Rolladen.Position"
+                    "targetposition": "EG.Buero.Rolladen.Position",
+                    "inverted": true
                 }
-
             ]
         }
     ],
