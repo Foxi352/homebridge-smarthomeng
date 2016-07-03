@@ -1,6 +1,6 @@
 {
   "name": "homebridge-smarthomeng",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Platform plugin for SmartHomeNG: https://github.com/smarthomeNG/smarthome",
   "license": "GPL",
   "keywords": [
