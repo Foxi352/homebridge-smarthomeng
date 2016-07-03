@@ -1,9 +1,18 @@
-// SmartHomeNG Platform Shim for HomeBridge
+/*****
+ * SmartHomeNG platform shim for use with nfarina's homebridge plugin system 
+ * This work has been inspired by the homebridge-knx platform shim. Credits to the autor !
+ * 
+ */
 
 var Accessory, Service, Characteristic, UUIDGen;
 var fs = require('fs');
 var path = require('path');
+
 var SmartHomeNGConnection =  require("./SmartHomeNGConnection.js").SmartHomeNGConnection;
+var milliTimeout = 300; // used to block responses while swiping
+var monitoring = [];
+var colorOn = "\x1b[30;47m";
+var colorOff = "\x1b[0m";
 
 module.exports = function(homebridge) {
     // Accessory must be created from PlatformAccessory Constructor
@@ -42,33 +51,29 @@ function SmartHomeNGPlatform(log, config, api) {
   this.shngcon = new SmartHomeNGConnection(this, this.log, this.shng_host, this.shng_port);
   this.shngcon.updateCallback = this.update;
   
-  if (api) {
-      this.api = api;
-      this.api.on('didFinishLaunching', function() {
+    if (api) {
+        this.api = api;
+        this.api.on('didFinishLaunching', function() {
         this.log("Finished loading " + this.accessoriesCache.length + " accessories");
+        this.log(monitoring);
         // Add supported SHNG items to monitoring
         var tomonitor = [];
-        for(i = 0; i < this.accessoriesCache.length; i++) {
-            var device = this.accessoriesCache[i].device;
-            for (var key in device) {
-                if (this.supportedFunctions.indexOf(key) >= 0) {
-                    if(tomonitor.indexOf(device[key]) == -1) {
-                        tomonitor.push(device[key]);
-                    }  
-                }
-            }
+        for(i = 0; i < monitoring.length; i++) {
+            var device = monitoring[i];
+            if(tomonitor.indexOf(device.item) == -1) {
+                tomonitor.push(device.item);
+            }  
         }
         this.shngcon.tomonitor = tomonitor;
       }.bind(this));
-  }
-
-  this.shngcon.init();
+    }
+    this.shngcon.init();
 }
 
 // Accessory constructor
-function SmartHomeNGAccessory(log, device, shngcon) {
-    this.name = device.name;
-    this.device = device;
+function SmartHomeNGAccessory(log, config, shngcon) {
+    this.name = config.name;
+    this.config = config;
     this.log = log;
     this.shngcon = shngcon;
     this.value = undefined;
@@ -102,27 +107,12 @@ SmartHomeNGPlatform.prototype = {
      
     update: function (item, value) {
         //this.log("CALLBACK: item " + item + " with value " + value);
-        for (i = 0; i < this.platform.accessoriesCache.length; i++) {
-            accessory = this.platform.accessoriesCache[i];
-            //this.log(this.platform);
-            // loop through accessories and services to find modified one
-            for (var key in accessory.device) {
-                if (accessory.device[key] == item) {
-                    var myValue = value;
-                    if (accessory.device.type == 'WindowCovering' && accessory.device.inverted) {
-                        myValue = 100 - value;
-                    }
-                    this.log("Updating item '" + item + "' characteristic " + key + " with value " + myValue);
-                    accessory.device[key + '_value'] = myValue;
-                    myCharacteristic = Characteristic.On;
-                    //accessory.getService(Service.Lightbulb).getCharacteristic(myCharacteristic).setValue(value);
-                    //this.log(this);
-                    // var myService = accessory.getService(Service.Lightbulb)
-                    // var myCharacteristic = myService.getCharacteristic(characteristicType);
-                    // Characteristic.On - Characteristic.Brightness
-                    // myCharacteristic.setValue(defaultValue);
-                    //break;
-                }
+        for (var i = 0; i < monitoring.length; i++) {
+        // iterate through all registered addresses
+            if (monitoring[i].item == item) {
+                this.log("[" + item + "] Got update from SmartHomeNG with value " + value);
+                monitoring[i].lastValue = value;
+                monitoring[i].callback(item, value, monitoring[i].inverted);
             }
         }
     },
@@ -140,63 +130,25 @@ SmartHomeNGAccessory.prototype = {
     // Enumerate accessory services and characteristics
     getServices: function() {
         var that = this;
-        this.log("Setting services for '" + this.name + "'");
+        var myServices = [];
+        
+        this.log("["+ this.name +"] Setting up services.");
         
         // check if device type is set in config
-        if (!this.device.type) {
+        if (!this.config.type) {
             this.log("Ignoring '" + this.name + "' because no device type found, make sure to have the 'type' parameter in your config.json !");
             return [];
         }
 
         // construct service and characteristics according to device type
-        switch (this.device.type.toLowerCase()) {
-            
+        switch (this.config.type.toLowerCase()) {        
             // Lightbulb service
             case 'lightbulb':
-                var myService = new Service.Lightbulb(this.name);
-                // On / Off characteristic
-                if (this.device.onoff) {
-                    this.log("Adding on/off characteristic to " + this.name);
-                    
-                    myService
-                        .getCharacteristic(Characteristic.On)
-                        .on('get', function(callback) { that.getValue("onoff", callback);})
-                        .on('set', function(value, callback) { that.setValue("onoff", value, callback);});
-                }
-                // Dimmable characteristic
-                if (this.device.brightness) {
-                    this.log("Adding brightness characteristic to " + this.name);
-                    myService
-                        .addCharacteristic(Characteristic.Brightness)
-                        .on('get', function(callback) { that.getValue("brightness", callback);})
-                        .on('set', function(value, callback) { that.setValue("brightness", value, callback);});
-                }
+                myServices.push(this.getLightbulbService(this.config));
                 break;
             
             case 'windowcovering':
-                var myService = new Service.WindowCovering(this.name);
-                // Current position characteristic
-                if (this.device.currentposition) {
-                    this.log("Adding 'CurrentPosition' characteristic to " + this.name);     
-                    myService
-                        .getCharacteristic(Characteristic.CurrentPosition)
-                        .on('get', function(callback) { that.getValue("currentposition", callback);});
-                }
-                // Target position characteristic
-                if (this.device.targetposition) {
-                    this.log("Adding 'TargetPosition' characteristic to " + this.name);     
-                    myService
-                        .getCharacteristic(Characteristic.TargetPosition)
-                        .on('get', function(callback) { that.getValue("targetposition", callback);})
-                        .on('set', function(value, callback) { that.setValue("targetposition", value, callback);});
-
-                    this.log("Adding 'PositionState' characteristic to " + this.name);     
-                    myService
-                        .getCharacteristic(Characteristic.PositionState)
-                        .on('get', function(callback) { that.getValue("positionstate", callback);})
-                        .setValue(1);
-                    this.device.positionstate_value = 2;
-                }
+                myServices.push(this.getWindowCoveringService(this.config));
                 break;
             
             // If no supported type is found warn user and return empty services
@@ -209,62 +161,182 @@ SmartHomeNGAccessory.prototype = {
         // device information service
         var informationService = new Service.AccessoryInformation();
         informationService
-            .setCharacteristic(Characteristic.Manufacturer, this.manufacturername)
-            .setCharacteristic(Characteristic.Model, this.model)
-            .setCharacteristic(Characteristic.SerialNumber, this.device.uniqueid);
-        MyServices = [informationService, myService];
-        //this.toto = MyServices;
-        return MyServices;
+            .setCharacteristic(Characteristic.Manufacturer, "Opensource Community")
+            .setCharacteristic(Characteristic.Model, "SmartHomeNG device")
+            .setCharacteristic(Characteristic.SerialNumber, "beta");
+        myServices.push(informationService);
+       
+        return myServices;
     },
 
-    // Get value
-    getValue: function(characteristic, callback) {
-        this.log("Get value for " + this.device.name + ", characteristic: " + characteristic + ".");
-        this.log(this.device);
-        //if (characteristic == 'CurrentPosition') { characteristic = 'position'};
-        this.log("Looking for " + characteristic + "_value");
-        if (this.device[characteristic + "_value"] != undefined) {
-            this.log("Found value '" + this.device[characteristic + "_value"] + "' for '" + characteristic + "' of device '" + this.device.name + "'.");
-            if (callback) callback(null, this.device[characteristic + "_value"]);
-        } else {
-            if (callback) callback();
-        }
-        
-    },
-
-    // Set value
-    setValue: function(characteristic, value, callback) {
-        this.log("Set " + this.device.name + ", characteristic: " + characteristic + ", value: " + value + ".");
-
-        // some special treatment for shutters
-        if (this.device.type == 'WindowCovering') {
-            if (characteristic == 'targetposition') {
-                // if 0% or 100% use open / close actions if available
-                if(this.device.updown != undefined && (value == 0 || value == 100)) {
-                    characteristic = 'updown';                   
-                    if(value == 100) value = 0;
-                    else value = 1;
-                }
-                // For HomeKit 0% is closed. User can invert this beheavior as KNX for example is the opposite.
-                if (this.device.inverted) {
-                    value = 100 - value;
-                } 
-            } 
-        }
-
-
-        // If item for characteristic exists then send value to it
-        if (this.device[characteristic] != undefined) {
-            this.shngcon.setValue(this.device[characteristic], value);
-        }
-        // Check if callback required
-        if (callback) callback(); // Success
-        callback = null;
-    },
-      
     // Respond to identify request
     identify: function(callback) { 
         this.log("Identify request for '" + this.device.name + "'.");
         callback();
-    }
+    },
+
+/** Registering routines
+ * 
+ */
+    // boolean: get 0 or 1 from the bus, write boolean
+    shngregister_bool: function(name, shngitem, characteristic, inverted) {
+        this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
+        var callback = function (shngitem, value, inverted) {
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            characteristic.setValue(value ? (inverted ? 0:1) : (inverted ? 1:0), undefined, 'fromSHNG');
+        }.bind(this);
+        monitoring.push({item: shngitem, callback: callback, inverted: inverted});
+    },
+    
+    shngregister_percent: function(name, shngitem, characteristic, inverted) {
+        this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
+        var callback = function (shngitem, value, inverted) {
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
+        }.bind(this);
+        monitoring.push({item: shngitem, callback: callback, inverted: inverted});
+    },
+ 
+ /** get methods
+ *
+ */
+    getState: function(callback, shngitem, inverted) {
+        this.log("[" + this.name + "] Get value from cache for item " + shngitem + ".");
+        for (var i = 0; i < monitoring.length; i++) {
+            if (monitoring[i].item == shngitem) {
+                if (monitoring[i].lastValue != undefined) {
+                    value = monitoring[i].lastValue;
+                    this.log("[" + this.name + "] Found value " + value + " in cache.");
+                    //monitoring[i].callback(item, value, monitoring[i].inverted);
+                    callback(null, value);
+                    return;
+                }
+                break;
+            }
+        }
+        callback();
+    },
+
+/** set methods used for creating callbacks
+ *
+ */
+    setBooleanState: function(value, callback, context, shngitem, inverted) {
+        if (context === 'fromSHNG') {
+            if (callback) {
+                callback();
+            }
+        } else {
+            var numericValue = inverted ? 1:0;
+            if (value) {
+                numericValue = inverted ? 0:1;
+            }
+            this.log("[" + this.name + "] Setting " + shngitem + (inverted ? " (inverted)":"") + " boolean to %s", numericValue);
+            this.shngcon.setValue(shngitem, numericValue);
+            if (callback) callback();
+        }
+    },
+    
+    setPercentage: function(value, callback, context, shngitem, inverted) {
+        if (context === 'fromSHNG') {
+            if (callback) {
+                callback();
+            }
+        } else {      
+            var numericValue = 0;
+            value = ( value>=0 ? (value<=100 ? value:100):0 ); //ensure range 0..100
+            if (inverted) {
+                numericValue = 100  - value; 
+            } else {
+                numericValue = value;
+            }
+            this.log("[" + this.name + "] Setting " + shngitem + " percentage to %s", numericValue);
+            this.shngcon.setValue(shngitem, numericValue);
+            if (callback) callback();
+        }
+    },
+        
+/** bindCharacteristic
+ *  initializes callbacks for 'set' events (from HK) and for SmartHomeNG monitoring events (to HK)
+ */    
+    // Bind characteristic to service during startup
+    bindCharacteristic: function(myService, characteristicType, valueType, shngitem, inverted, defaultValue) {
+        var myCharacteristic = myService.getCharacteristic(characteristicType);
+        this.log("SHNGITEM: " + shngitem)
+        if (defaultValue) {
+            myCharacteristic.setValue(defaultValue);
+        }
+        switch (valueType) {
+            case "Bool":
+                myCharacteristic.on('set', function(value, callback, context) {
+                    this.setBooleanState(value, callback, context, shngitem, inverted);
+                }.bind(this));
+                myCharacteristic.on('get', function(callback, context) {
+                    this.getState(callback, shngitem, inverted);
+                }.bind(this));
+                this.shngregister_bool(this.name, shngitem, myCharacteristic, inverted);
+                break; 
+            case "Percent":
+                myCharacteristic.on('set', function(value, callback, context) {
+                    this.setPercentage(value, callback, context, shngitem, inverted);
+                    //myCharacteristic.timeout = Date.now()+milliTimeout;
+                }.bind(this));  
+                myCharacteristic.on('get', function(callback, context) {
+                    this.getState(callback, shngitem, inverted);
+                }.bind(this));
+                this.shngregister_percent(this.name, shngitem, myCharacteristic, inverted);
+                break;
+            default:
+                this.log(colorOn + "[ERROR] unknown type passed: [" + valueType+"]"+ colorOff);
+        } 
+        return myCharacteristic;
+    },
+
+/**
+ *  function getXXXXXXXService(config)
+ *  returns a configured service object to the caller (accessory/device)
+ *
+ */   
+    // Create Lightbulb service
+    getLightbulbService: function(config) {
+        var myService = new Service.Lightbulb(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        // On (and Off)
+        if (config.onoff) {
+            this.log("["+ this.name +"] Lightbulb on/off characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
+        }
+        // Brightness if available
+        if (config.brightness) {
+            this.log("["+ this.name +"] Lightbulb Brightness characteristic enabled");
+            myService.addCharacteristic(Characteristic.Brightness); // it's an optional
+            this.bindCharacteristic(myService, Characteristic.Brightness, "Percent", config.brightness, inverted);
+        }
+        return myService;
+    },
+    
+    // Create WindowCovering service
+    getWindowCoveringService: function(config) {
+        this.log(config);
+        var myService = new Service.WindowCovering(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        if (config.currentposition) {
+            this.log("["+ this.name +"] WindowCovering CurrentPosition characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.CurrentPosition, "Percent", config.currentposition, inverted);
+        } 
+        if (config.targetposition) {
+            this.log("["+ this.name +"] WindowCovering TargetPosition characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.TargetPosition, "Percent", config.targetposition, inverted);
+        } 
+        this.log("["+ this.name +"] WindowCovering PositionState characteristic enabled");
+        this.bindCharacteristic(myService, Characteristic.PositionState, "Int", config.positionstate, inverted, 2);
+        return myService;
+    },
+        
+
 }

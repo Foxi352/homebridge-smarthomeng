@@ -1,4 +1,4 @@
-#Attention: This software is not ready for production use, consider it being in alpha state !!!
+#Attention: This software is in alpha state !!!
 
 #homebridge-smarthomeng
 Homebridge plugin for SmartHomeNG
@@ -15,19 +15,21 @@ This plugin currently supports:
 ##Installation
 Install nodejs >= 0.12. You have to find out the right way for your OS. The following commands have been tested on Debian Jessie.
 <pre>
-curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
+curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
 sudo apt-get install -y nodejs
 </pre>
-
+Homebridge needs the libavahi-compat-libdnssd-dev lib (installation tested on Debian Jessie)
+<pre>
+sudo apt-get install libavahi-compat-libdnssd-dev
+</pre>
 Install homebridge from NPM repository
 <pre>
-npm install -g homebridge
+npm install -g homebridge --unsafe-perm
 </pre>
 
 Install this plugin from NPM repository
-*** ATTENTION: NOT YET PUBLISHED ***
 <pre>
-npm install -g homebridge-smarthomeng
+npm install -g homebridge-smarthomeng --unsafe-perm
 </pre>
 
 ##Configuration

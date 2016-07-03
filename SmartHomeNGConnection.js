@@ -57,8 +57,10 @@ SmartHomeNGConnection.prototype.receive = function(message) {
 }
 
 SmartHomeNGConnection.prototype.setValue = function(item, value) {
+    var command = '{"cmd":"item","id":"' + item + '","val":"' + value + '"}';
+    this.log("Sending " + command + " to SmartHomeNG");
     if (this.connected) {
-        this.connection.send('{"cmd":"item","id":"' + item + '","val":"' + value + '"}')
+        this.connection.send(command)
     } else {
         this.log("Cannot switch " + item + ", no connection to SmartHomeNG !")
     }
