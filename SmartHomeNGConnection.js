@@ -1,6 +1,8 @@
 var http = require("http");
 var WebSocketClient = require('websocket').client
 
+var colorOn = "\x1b[30;47m";
+var colorOff = "\x1b[0m";
 
 function SmartHomeNGConnection(platform, log, host, port) {
   this.log = log;
@@ -8,6 +10,7 @@ function SmartHomeNGConnection(platform, log, host, port) {
   this.connected = false;
   this.updateCallback = undefined;
   this.tomonitor = [];
+  this.retryTimer = 10;
   
   this.shng_host = host;
   this.shng_port = port;
@@ -15,31 +18,39 @@ function SmartHomeNGConnection(platform, log, host, port) {
 }
 
 SmartHomeNGConnection.prototype.init = function () {
-	this.connect();
-}
-
-SmartHomeNGConnection.prototype.connect = function(host, ip) {
     var that = this
-    this.log("Connecting to SmartHomeNG @ " + this.shng_host);	
-  
     this.shng_ws = new WebSocketClient();
-  
-    this.shng_ws.connect('ws://' + this.shng_host + ':' + this.shng_port + '/');
     this.shng_ws.on('connect', function(connection) {
-        that.log('connected to server!'); 
+        that.log('[SmartHomeNGConnection] connected to server!'); 
         that.connected = true;
         that.connection = connection;
         that.startMonitoring();
         
-        connection.on('message', function(message) { that.receive(message); });	  
-		connection.on('error', function(error) { that.log('WebSocket error: ' + error.toString()) });
-		connection.on('close', function() {
-    	   that.log('Connection to smarthome lost');
-    	   that.connected = false;
+        connection.on('message', function(message) { that.receive(message); });   
+        connection.on('error', function() { 
+            that.log(colorOn + '[SmartHomeNGConnection] WebSocket error: ' + error.toString() + colorOff) 
         });
-		
-	});
+        connection.on('close', function(code, description) {
+           that.log(colorOn + '[SmartHomeNGConnection] Connection to smarthome lost, retrying in ' + that.retryTimer + ' seconds. ' + description + colorOff);
+           that.connected = false;
+           setTimeout(that.connect.bind(that), that.retryTimer * 1000);
+        });
+        
+    });
 
+    this.shng_ws.on('connectFailed', function(errorDescription) {
+        that.connected = false;
+        that.log(colorOn + '[SmartHomeNGConnection] Connection error, retrying in ' + that.retryTimer + ' seconds. ' + errorDescription + colorOff);
+        setTimeout(that.connect.bind(that), that.retryTimer * 1000);
+    });
+
+	this.connect();
+}
+
+SmartHomeNGConnection.prototype.connect = function(host, ip) {
+    this.log("[SmartHomeNGConnection] Connecting to SmartHomeNG @ " + this.shng_host);	    
+    this.shng_ws.connect('ws://' + this.shng_host + ':' + this.shng_port + '/');
+ 
 }
 
 SmartHomeNGConnection.prototype.receive = function(message) {
