@@ -27,7 +27,7 @@ SmartHomeNGConnection.prototype.init = function () {
         that.startMonitoring();
         
         connection.on('message', function(message) { that.receive(message); });   
-        connection.on('error', function() { 
+        connection.on('error', function(error) { 
             that.log(colorOn + '[SmartHomeNGConnection] WebSocket error: ' + error.toString() + colorOff) 
         });
         connection.on('close', function(code, description) {
