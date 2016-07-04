@@ -55,7 +55,7 @@ function SmartHomeNGPlatform(log, config, api) {
         this.api = api;
         this.api.on('didFinishLaunching', function() {
         this.log("Finished loading " + this.accessoriesCache.length + " accessories");
-        this.log(monitoring);
+        // this.log(monitoring);
         // Add supported SHNG items to monitoring
         var tomonitor = [];
         for(i = 0; i < monitoring.length; i++) {
@@ -110,7 +110,7 @@ SmartHomeNGPlatform.prototype = {
         for (var i = 0; i < monitoring.length; i++) {
         // iterate through all registered addresses
             if (monitoring[i].item == item) {
-                this.log("[" + item + "] Got update from SmartHomeNG with value " + value);
+                this.log("[" + monitoring[i].name + "] Got update for '" + monitoring[i].characteristic + "' from SmartHomeNG item '" + item + "' with value " + value + ".");
                 monitoring[i].lastValue = value;
                 monitoring[i].callback(item, value, monitoring[i].inverted);
             }
@@ -185,7 +185,7 @@ SmartHomeNGAccessory.prototype = {
             //this.log("[" + this.name + "] callback for " + characteristic.displayName);
             characteristic.setValue(value ? (inverted ? 0:1) : (inverted ? 1:0), undefined, 'fromSHNG');
         }.bind(this);
-        monitoring.push({item: shngitem, callback: callback, inverted: inverted});
+        monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
     },
     
     shngregister_percent: function(name, shngitem, characteristic, inverted) {
@@ -194,7 +194,7 @@ SmartHomeNGAccessory.prototype = {
             //this.log("[" + this.name + "] callback for " + characteristic.displayName);
             characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
         }.bind(this);
-        monitoring.push({item: shngitem, callback: callback, inverted: inverted});
+        monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
     },
  
  /** get methods
@@ -261,7 +261,7 @@ SmartHomeNGAccessory.prototype = {
     // Bind characteristic to service during startup
     bindCharacteristic: function(myService, characteristicType, valueType, shngitem, inverted, defaultValue) {
         var myCharacteristic = myService.getCharacteristic(characteristicType);
-        this.log("SHNGITEM: " + shngitem)
+        //this.log("SHNGITEM: " + shngitem)
         if (defaultValue) {
             myCharacteristic.setValue(defaultValue);
         }

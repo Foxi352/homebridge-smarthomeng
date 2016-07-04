@@ -59,7 +59,7 @@ SmartHomeNGConnection.prototype.receive = function(message) {
     if (msg.items) {
         for (int = 0; int < msg.items.length; int++) {
             item = msg.items[int];
-            //this.log("Received value " + item[1] + " for item " + item[0]);
+            //this.log("[SmartHomeNGConnection] Received value " + item[1] + " for item " + item[0]);
             if (this.updateCallback) {
                 this.updateCallback(item[0], item[1]);
             }
@@ -69,24 +69,24 @@ SmartHomeNGConnection.prototype.receive = function(message) {
 
 SmartHomeNGConnection.prototype.setValue = function(item, value) {
     var command = '{"cmd":"item","id":"' + item + '","val":"' + value + '"}';
-    this.log("Sending " + command + " to SmartHomeNG");
     if (this.connected) {
+        this.log("[SmartHomeNGConnection] Sending " + command + " to SmartHomeNG");
         this.connection.send(command)
     } else {
-        this.log("Cannot switch " + item + ", no connection to SmartHomeNG !")
+        this.log("[SmartHomeNGConnection] Cannot switch " + item + ", no connection to SmartHomeNG !")
     }
 }
 
 SmartHomeNGConnection.prototype.startMonitoring = function() {   
     if (this.connected && this.tomonitor.length > 0) {
         var buffer = {};
-        this.log("Start monitoring " + this.tomonitor);
+        this.log("[SmartHomeNGConnection] Start monitoring " + this.tomonitor);
         buffer.cmd = 'monitor';
         buffer.items = this.tomonitor;
         var command = JSON.stringify(buffer);
         this.connection.send(command);
     } else {
-        this.log("Cannot start monitoring, not connected !");
+        this.log("[SmartHomeNGConnection] Cannot start monitoring, not connected !");
     }
 }
 
