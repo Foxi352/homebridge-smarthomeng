@@ -1,6 +1,6 @@
 /*****
  * SmartHomeNG platform shim for use with nfarina's homebridge plugin system 
- * This work has been inspired by the homebridge-knx platform shim. Credits to the autor !
+ * This work has been inspired by the homebridge-knx platform shim. Credits to snowdd1 !
  * 
  */
 
@@ -31,7 +31,7 @@ function SmartHomeNGPlatform(log, config, api) {
     this.log = log;
     this.config = config;
     this.accessoriesCache = [];
-    this.supportedFunctions = ['onoff', 'brightness', 'currentposition', 'targetposition'];
+    this.supportedFunctions = ['onoff', 'brightness', 'currentposition', 'targetposition', 'motiondetected'];
   
     if (this.config["host"] != undefined) {
         this.shng_host = this.config["host"];
@@ -150,10 +150,14 @@ SmartHomeNGAccessory.prototype = {
             case 'windowcovering':
                 myServices.push(this.getWindowCoveringService(this.config));
                 break;
+
+            case 'motionsensor':
+                myServices.push(this.getMotionSensorService(this.config));
+                break;
             
             // If no supported type is found warn user and return empty services
             default:
-                this.log("Ignoring '" + this.name + "' because device type '" + this.device.type + "' is not supported !");
+                this.log("Ignoring '" + this.name + "' because device type '" + this.config.type + "' is not supported !");
                 return [];
                 break;
         }
@@ -319,7 +323,7 @@ SmartHomeNGAccessory.prototype = {
     
     // Create WindowCovering service
     getWindowCoveringService: function(config) {
-        this.log(config);
+        //this.log(config);
         var myService = new Service.WindowCovering(config.name,config.name);
         var inverted = false;
         if (config.inverted) {
@@ -334,7 +338,21 @@ SmartHomeNGAccessory.prototype = {
             this.bindCharacteristic(myService, Characteristic.TargetPosition, "Percent", config.targetposition, inverted);
         } 
         this.log("["+ this.name +"] WindowCovering PositionState characteristic enabled");
-        this.bindCharacteristic(myService, Characteristic.PositionState, "Int", config.positionstate, inverted, 2);
+        this.bindCharacteristic(myService, Characteristic.PositionState, "Int", config.positionstate, inverted, Characteristic.PositionState.STOPPED);
+        return myService;
+    },
+    
+    // Create MotionSensor service
+    getMotionSensorService: function(config) {
+        var myService = new Service.MotionSensor(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        if (config.motiondetected) {
+            this.log("["+ this.name +"] MotionSensor MotionDetected characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.MotionDetected, "Bool", config.motiondetected, inverted);
+        } 
         return myService;
     },
         
