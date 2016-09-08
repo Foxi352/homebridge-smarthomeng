@@ -3,6 +3,7 @@ var WebSocketClient = require('websocket').client
 
 var colorOn = "\x1b[30;47m";
 var colorOff = "\x1b[0m";
+var version = "1.0";
 
 function SmartHomeNGConnection(platform, log, host, port) {
   this.log = log;
@@ -24,6 +25,7 @@ SmartHomeNGConnection.prototype.init = function () {
         that.log('[SmartHomeNGConnection] connected to server!'); 
         that.connected = true;
         that.connection = connection;
+        that.idenfityMyself();
         that.startMonitoring();
         
         connection.on('message', function(message) { that.receive(message); });   
@@ -74,6 +76,19 @@ SmartHomeNGConnection.prototype.setValue = function(item, value) {
         this.connection.send(command)
     } else {
         this.log("[SmartHomeNGConnection] Cannot switch " + item + ", no connection to SmartHomeNG !")
+    }
+}
+
+SmartHomeNGConnection.prototype.idenfityMyself = function() {
+    if (this.connected) {
+        var buffer = {};
+        buffer.cmd = 'identity';
+        buffer.sw = 'homebridge-SmarHomeNG';
+        buffer.ver = version;
+        var command = JSON.stringify(buffer);
+        this.connection.send(command);
+    } else {
+        this.log("[SmartHomeNGConnection] Cannot identify myself, not connected !");
     }
 }
 
