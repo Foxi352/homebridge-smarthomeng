@@ -45,8 +45,9 @@ function SmartHomeNGPlatform(log, config, api) {
         this.shng_port = 2424;
     }
   
-  var that = this
-  this.log("SmartHomeNG Platform Plugin Version " + this.getVersion())
+  var that = this;
+  this.version = this.getVersion();
+  this.log("SmartHomeNG Platform Plugin Version " + this.version)
 
   this.shngcon = new SmartHomeNGConnection(this, this.log, this.shng_host, this.shng_port);
   this.shngcon.updateCallback = this.update;
@@ -143,12 +144,27 @@ SmartHomeNGAccessory.prototype = {
         // construct service and characteristics according to device type
         switch (this.config.type.toLowerCase()) {        
             // Lightbulb service
+            case 'fan':
+                myServices.push(this.getFanService(this.config));
+                break;
+                
+            case 'temperaturesensor':
+                myServices.push(this.getTemperatureSensorService(this.config));
+                break;
+                
+            case 'thermostat':
+                break;
+
             case 'lightbulb':
                 myServices.push(this.getLightbulbService(this.config));
                 break;
             
             case 'windowcovering':
                 myServices.push(this.getWindowCoveringService(this.config));
+                break;
+
+            case 'occupancysensor':
+                myServices.push(this.getOccupancySensorService(this.config));
                 break;
 
             case 'motionsensor':
@@ -182,7 +198,24 @@ SmartHomeNGAccessory.prototype = {
 /** Registering routines
  * 
  */
-    // boolean: get 0 or 1 from the bus, write boolean
+    shngregister_int: function(name, shngitem, characteristic) {
+        this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
+        var callback = function (shngitem, value) {
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            characteristic.setValue(value, undefined, 'fromSHNG');
+        }.bind(this);
+        monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: false});
+    },
+    
+    shngregister_float: function(name, shngitem, characteristic) {
+        this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
+        var callback = function (shngitem, value) {
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            characteristic.setValue(value, undefined, 'fromSHNG');
+        }.bind(this);
+        monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: false});
+    },
+
     shngregister_bool: function(name, shngitem, characteristic, inverted) {
         this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
         var callback = function (shngitem, value, inverted) {
@@ -258,6 +291,38 @@ SmartHomeNGAccessory.prototype = {
             if (callback) callback();
         }
     },
+    
+	setInt: function(value, callback, context, shngitem) {
+    	if (context === 'fromSHNG') {
+    		if (callback) {
+    			callback();
+    		}
+    	} else {	  
+    		var numericValue = 0;
+    		if (value && value>=0) {
+    			numericValue = value; 
+    		}
+    		this.log("["+ this.name +"] Setting " + shngitem + " int to %s", numericValue);
+            this.shngcon.setValue(shngitem, numericValue);
+            if (callback) callback();
+    	}
+    },
+
+	setFloat: function(value, callback, context, shngitem) {
+    	if (context === 'fromSHNG') {
+    		if (callback) {
+    			callback();
+    		}
+    	} else {	  
+    		var numericValue = 0;
+    		if (value && value>=0) {
+    			numericValue = value; 
+    		}
+    		this.log("["+ this.name +"] Setting " + shngitem + " float to %s", numericValue);
+            this.shngcon.setValue(shngitem, numericValue);
+            if (callback) callback();
+    	}
+    },
         
 /** bindCharacteristic
  *  initializes callbacks for 'set' events (from HK) and for SmartHomeNG monitoring events (to HK)
@@ -270,6 +335,24 @@ SmartHomeNGAccessory.prototype = {
             myCharacteristic.setValue(defaultValue);
         }
         switch (valueType) {
+            case "Int":
+                myCharacteristic.on('set', function(value, callback, context) {
+                    this.setInt(value, callback, context, shngitem);
+                }.bind(this));
+                myCharacteristic.on('get', function(callback, context) {
+                    this.getState(callback, shngitem, inverted);
+                }.bind(this));
+                this.shngregister_int(this.name, shngitem, myCharacteristic);
+                break; 
+            case "Float":
+                myCharacteristic.on('set', function(value, callback, context) {
+                    this.setFloat(value, callback, context, shngitem);
+                }.bind(this));
+                myCharacteristic.on('get', function(callback, context) {
+                    this.getState(callback, shngitem, inverted);
+                }.bind(this));
+                this.shngregister_float(this.name, shngitem, myCharacteristic);
+                break; 
             case "Bool":
                 myCharacteristic.on('set', function(value, callback, context) {
                     this.setBooleanState(value, callback, context, shngitem, inverted);
@@ -300,6 +383,32 @@ SmartHomeNGAccessory.prototype = {
  *  returns a configured service object to the caller (accessory/device)
  *
  */   
+    // Create Temperature Sensor service
+    getTemperatureSensorService: function(config) {
+        var myService = new Service.TemperatureSensor(config.name,config.name);
+        // Current temperature
+        if (config.currenttemperature) {
+            this.log("["+ this.name +"] TemperatureSensor CurrentTemperature characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.CurrentTemperature, "Float", config.currenttemperature, false);
+        }
+        return myService;
+    },
+    
+    // Create Fan service
+    getFanService: function(config) {
+        var myService = new Service.Fan(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        // On (and Off)
+        if (config.onoff) {
+            this.log("["+ this.name +"] Fan on/off characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
+        }
+        return myService;
+    },
+    
     // Create Lightbulb service
     getLightbulbService: function(config) {
         var myService = new Service.Lightbulb(config.name,config.name);
@@ -342,6 +451,20 @@ SmartHomeNGAccessory.prototype = {
         return myService;
     },
     
+    // Create OccupancySensor service
+    getOccupancySensorService: function(config) {
+        var myService = new Service.OccupancySensor(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        if (config.motiondetected) {
+            this.log("["+ this.name +"] OccupancySensor OccupancyDetected characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.OccupancyDetected, "Bool", config.motiondetected, inverted);
+        } 
+        return myService;
+    },
+
     // Create MotionSensor service
     getMotionSensorService: function(config) {
         var myService = new Service.MotionSensor(config.name,config.name);

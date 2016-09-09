@@ -3,7 +3,6 @@ var WebSocketClient = require('websocket').client
 
 var colorOn = "\x1b[30;47m";
 var colorOff = "\x1b[0m";
-var version = "1.0";
 
 function SmartHomeNGConnection(platform, log, host, port) {
   this.log = log;
@@ -19,7 +18,7 @@ function SmartHomeNGConnection(platform, log, host, port) {
 }
 
 SmartHomeNGConnection.prototype.init = function () {
-    var that = this
+    var that = this;
     this.shng_ws = new WebSocketClient();
     this.shng_ws.on('connect', function(connection) {
         that.log('[SmartHomeNGConnection] connected to server!'); 
@@ -84,7 +83,7 @@ SmartHomeNGConnection.prototype.idenfityMyself = function() {
         var buffer = {};
         buffer.cmd = 'identity';
         buffer.sw = 'homebridge-SmarHomeNG';
-        buffer.ver = version;
+        buffer.ver = this.platform.version;
         var command = JSON.stringify(buffer);
         this.connection.send(command);
     } else {
