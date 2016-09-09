@@ -192,7 +192,7 @@ SmartHomeNGAccessory.prototype = {
 
     // Respond to identify request
     identify: function(callback) { 
-        this.log("Identify request for '" + this.device.name + "'.");
+        this.log("Identify request for '" + this.name + "'.");
         callback();
     },
 
