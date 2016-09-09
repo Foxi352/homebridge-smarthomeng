@@ -409,8 +409,13 @@ SmartHomeNGAccessory.prototype = {
             this.bindCharacteristic(myService, Characteristic.TargetTemperature, "Float", config.targettemperature, false);
         }
         
-        this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.CELSUIS, false);
-        
+        if (config.temperaturedisplayunits && config.temperaturedisplayunits.toLowerCase() == 'fahrenheit') {
+            this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.FAHRENHEIT, false);
+            this.log("FAHRENHEIT: " + Characteristic. TemperatureDisplayUnits.FAHRENHEIT);
+        } else {
+            this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.CELSIUS, false);
+            this.log("CELSIUS: " + Characteristic. TemperatureDisplayUnits.CELSIUS);
+        }
         return myService;
     },
     
