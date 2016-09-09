@@ -398,6 +398,8 @@ SmartHomeNGAccessory.prototype = {
     // Create Thermostat service
     getThermostatService: function(config) {
         var myService = new Service.Thermostat(config.name,config.name);
+
+
         // Current temperature
         if (config.currenttemperature) {
             this.log("["+ this.name +"] TemperatureSensor CurrentTemperature characteristic enabled");
@@ -406,15 +408,17 @@ SmartHomeNGAccessory.prototype = {
         // Target temperature
         if (config.targettemperature) {
             this.log("["+ this.name +"] TemperatureSensor TargetTemperature characteristic enabled");
+			myService.getCharacteristic(Characteristic.TargetTemperature).setProps({
+				minValue: config.targettemperatureminimum || 0,
+				maxValue: config.targettemperaturemaximum || 40
+			});
             this.bindCharacteristic(myService, Characteristic.TargetTemperature, "Float", config.targettemperature, false);
         }
         
         if (config.temperaturedisplayunits && config.temperaturedisplayunits.toLowerCase() == 'fahrenheit') {
             this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.FAHRENHEIT, false);
-            this.log("FAHRENHEIT: " + Characteristic. TemperatureDisplayUnits.FAHRENHEIT);
         } else {
             this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.CELSIUS, false);
-            this.log("CELSIUS: " + Characteristic. TemperatureDisplayUnits.CELSIUS);
         }
         return myService;
     },
