@@ -153,6 +153,7 @@ SmartHomeNGAccessory.prototype = {
                 break;
                 
             case 'thermostat':
+                myServices.push(this.getThermostatService(this.config));
                 break;
 
             case 'lightbulb':
@@ -391,6 +392,25 @@ SmartHomeNGAccessory.prototype = {
             this.log("["+ this.name +"] TemperatureSensor CurrentTemperature characteristic enabled");
             this.bindCharacteristic(myService, Characteristic.CurrentTemperature, "Float", config.currenttemperature, false);
         }
+        return myService;
+    },
+
+    // Create Thermostat service
+    getThermostatService: function(config) {
+        var myService = new Service.Thermostat(config.name,config.name);
+        // Current temperature
+        if (config.currenttemperature) {
+            this.log("["+ this.name +"] TemperatureSensor CurrentTemperature characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.CurrentTemperature, "Float", config.currenttemperature, false);
+        }
+        // Target temperature
+        if (config.targettemperature) {
+            this.log("["+ this.name +"] TemperatureSensor TargetTemperature characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.TargetTemperature, "Float", config.targettemperature, false);
+        }
+        
+        this.bindCharacteristic(myService, Characteristic.TemperatureDisplayUnits, "Int", Characteristic.TemperatureDisplayUnits.CELSUIS, false);
+        
         return myService;
     },
     
