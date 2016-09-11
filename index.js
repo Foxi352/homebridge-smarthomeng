@@ -142,10 +142,12 @@ SmartHomeNGAccessory.prototype = {
         }
 
         // construct service and characteristics according to device type
+        var serial = "unknown";
         switch (this.config.type.toLowerCase()) {        
             // Lightbulb service
             case 'fan':
                 myServices.push(this.getFanService(this.config));
+                serial = this.config.onoff;
                 break;
                 
             case 'temperaturesensor':
@@ -158,6 +160,7 @@ SmartHomeNGAccessory.prototype = {
 
             case 'lightbulb':
                 myServices.push(this.getLightbulbService(this.config));
+                serial = this.config.onoff;
                 break;
             
             case 'windowcovering':
@@ -166,10 +169,12 @@ SmartHomeNGAccessory.prototype = {
 
             case 'occupancysensor':
                 myServices.push(this.getOccupancySensorService(this.config));
+                serial = this.config.motiondetected;
                 break;
 
             case 'motionsensor':
                 myServices.push(this.getMotionSensorService(this.config));
+                serial = this.config.motiondetected;
                 break;
             
             // If no supported type is found warn user and return empty services
@@ -184,7 +189,7 @@ SmartHomeNGAccessory.prototype = {
         informationService
             .setCharacteristic(Characteristic.Manufacturer, "Opensource Community")
             .setCharacteristic(Characteristic.Model, "SmartHomeNG device")
-            .setCharacteristic(Characteristic.SerialNumber, "beta");
+            .setCharacteristic(Characteristic.SerialNumber, serial);
         myServices.push(informationService);
        
         return myServices;
