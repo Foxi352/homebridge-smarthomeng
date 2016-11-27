@@ -31,7 +31,7 @@ function SmartHomeNGPlatform(log, config, api) {
     this.log = log;
     this.config = config;
     this.accessoriesCache = [];
-    this.supportedFunctions = ['onoff', 'brightness', 'currentposition', 'targetposition', 'motiondetected'];
+    this.supportedFunctions = ['onoff', 'brightness', 'hue', 'saturation', 'currentposition', 'targetposition', 'motiondetected'];
   
     if (this.config["host"] != undefined) {
         this.shng_host = this.config["host"];
@@ -240,6 +240,16 @@ SmartHomeNGAccessory.prototype = {
         monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
     },
  
+    shngregister_angle: function(name, shngitem, characteristic, inverted) {
+        this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
+        var callback = function (shngitem, value, inverted) {
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            value = value * 3.6;
+            characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
+        }.bind(this);
+        monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
+    },
+ 
  /** get methods
  *
  */
@@ -297,8 +307,30 @@ SmartHomeNGAccessory.prototype = {
             if (callback) callback();
         }
     },
-    
-	setInt: function(value, callback, context, shngitem) {
+
+    setAngle: function(value, callback, context, shngitem, inverted) {
+        if (context === 'fromSHNG') {
+            if (callback) {
+                callback();
+            }
+        } else {      
+            var numericValue = 0;
+            value = ( value>=0 ? (value<=360 ? value:360):0 ); //ensure range 0..100
+            if (inverted) {
+                numericValue = 360  - value; 
+            } else {
+                numericValue = value;
+            }
+            this.log("[" + this.name + "] Setting " + shngitem + " percentage to %s", numericValue);
+
+            numericValue = numericValue / 3.6; //convert Angle to Percentage (0-100)
+
+            this.shngcon.setValue(shngitem, numericValue);
+            if (callback) callback();
+        }
+    },
+
+    setInt: function(value, callback, context, shngitem) {
     	if (context === 'fromSHNG') {
     		if (callback) {
     			callback();
@@ -314,7 +346,7 @@ SmartHomeNGAccessory.prototype = {
     	}
     },
 
-	setFloat: function(value, callback, context, shngitem) {
+    setFloat: function(value, callback, context, shngitem) {
     	if (context === 'fromSHNG') {
     		if (callback) {
     			callback();
@@ -377,6 +409,16 @@ SmartHomeNGAccessory.prototype = {
                     this.getState(callback, shngitem, inverted);
                 }.bind(this));
                 this.shngregister_percent(this.name, shngitem, myCharacteristic, inverted);
+                break;
+            case "Angle":
+                myCharacteristic.on('set', function(value, callback, context) {
+                    this.setAngle(value, callback, context, shngitem, inverted);
+                    //myCharacteristic.timeout = Date.now()+milliTimeout;
+                }.bind(this));  
+                myCharacteristic.on('get', function(callback, context) {
+                    this.getState(callback, shngitem, inverted);
+                }.bind(this));
+                this.shngregister_angle(this.name, shngitem, myCharacteristic, inverted);
                 break;
             default:
                 this.log(colorOn + "[ERROR] unknown type passed: [" + valueType+"]"+ colorOff);
@@ -459,6 +501,18 @@ SmartHomeNGAccessory.prototype = {
             this.log("["+ this.name +"] Lightbulb Brightness characteristic enabled");
             myService.addCharacteristic(Characteristic.Brightness); // it's an optional
             this.bindCharacteristic(myService, Characteristic.Brightness, "Percent", config.brightness, inverted);
+        }
+        // Hue if available
+        if (config.hue) {
+            this.log("["+ this.name +"] Lightbulb Hue characteristic enabled");
+            myService.addCharacteristic(Characteristic.Hue); // it's an optional
+            this.bindCharacteristic(myService, Characteristic.Hue, "Angle", config.hue, inverted);
+        }
+        // Brightness if available
+        if (config.saturation) {
+            this.log("["+ this.name +"] Lightbulb Saturation characteristic enabled");
+            myService.addCharacteristic(Characteristic.Saturation); // it's an optional
+            this.bindCharacteristic(myService, Characteristic.Saturation, "Percent", config.saturation, inverted);
         }
         return myService;
     },
