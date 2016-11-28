@@ -315,7 +315,7 @@ SmartHomeNGAccessory.prototype = {
             }
         } else {      
             var numericValue = 0;
-            value = ( value>=0 ? (value<=360 ? value:360):0 ); //ensure range 0..100
+            value = ( value>=0 ? (value<=360 ? value:360):0 ); //ensure range 0..360
             if (inverted) {
                 numericValue = 360  - value; 
             } else {
@@ -508,7 +508,7 @@ SmartHomeNGAccessory.prototype = {
             myService.addCharacteristic(Characteristic.Hue); // it's an optional
             this.bindCharacteristic(myService, Characteristic.Hue, "Angle", config.hue, inverted);
         }
-        // Brightness if available
+        // Saturation if available
         if (config.saturation) {
             this.log("["+ this.name +"] Lightbulb Saturation characteristic enabled");
             myService.addCharacteristic(Characteristic.Saturation); // it's an optional
