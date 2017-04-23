@@ -1,18 +1,18 @@
-#Attention: This software is in alpha state !!!
+# Attention: This software is in alpha state !!!
 
-#homebridge-smarthomeng
+# homebridge-smarthomeng
 Homebridge plugin for SmartHomeNG
 
-##Currently supported
+## Currently supported
 This plugin currently supports:
 * LightBulb with on/off and brightness characteristic
 * Window Covering with currentposition and targetposition characteristic (state not yet supported)
 
-##Requirements
+## Requirements
 * SmartHomeNG: https://github.com/smarthomeNG/smarthome
 * homebridge: https://www.npmjs.com/package/homebridge
 
-##Installation
+## Installation
 Install nodejs >= 0.12. You have to find out the right way for your OS. The following commands have been tested on Debian Jessie.
 <pre>
 curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
@@ -32,7 +32,7 @@ Install this plugin from NPM repository
 npm install -g homebridge-smarthomeng --unsafe-perm
 </pre>
 
-##Configuration
+## Configuration
 You have to create a config.json in .homebridge directory. You'll find that directory in your home folder.
 This is an example config file which just uses this plugin and some example SmartHomeNG items.
 <pre>
