@@ -11,6 +11,7 @@ This plugin currently supports the following services (and characteristics):
 * Window Covering (current- / target position)
 * Motion sensor (motion detected)
 * Occupancy sensor (motion detected)
+* Contact Sensor (contact state)
 
 ## Requirements
 * [SmartHomeNG](https://github.com/smarthomeNG/smarthome)
@@ -52,36 +53,90 @@ Alpine Linux: (--no-cache example is for building a docker image)
 ## Configuration
 You have to create a config.json in .homebridge directory. You'll find that directory in your home folder. This is an example config file which just uses this plugin and some example SmartHomeNG items.
 
-	{
-	    "bridge": {
-	        "name": "HomebridgeSH",
-	        "username": "CC:22:3D:E3:CE:32",
-	        "port": 51826,
-	        "pin": "031-45-154"
-	    },
-	
-	    "platforms": [
-	        {
-	            "platform": "SmartHomeNG",
-	             
-	            "name": "SmartHomeNG",
-	            "host": "myshngserver.mydomain",
-	            "accessories": [
-	                {
-	                    "name": "Licht Büro",
-	                    "type": "Lightbulb",
-	                    "onoff": "EG.Buero.Licht"
-	                },
-	                {
-	                    "name": "Rolladen Büro",
-	                    "type": "WindowCovering",
-	                    "updown": "EG.Buero.Rolladen.AufAb",
-	                    "currentposition": "EG.Buero.Rolladen.Position",
-	                    "targetposition": "EG.Buero.Rolladen.Position",
-	                    "inverted": true
-	                }
-	            ]
-	        }
-	    ],
-	    "description": "This is my development config file."
-	}
+{
+    "bridge": {
+        "name": "HBDEV",
+        "username": "CC:22:3D:E3:DE:37",
+        "port": 51826,
+        "pin": "031-45-154"
+    },
+
+    "platforms": [
+        {
+            "platform": "SmartHomeNG",
+             
+            "name": "SmartHomeNG",
+            "host": "srvsmarthome.xxxx.lu",
+            "accessories": [
+                {
+                    "name": "Temperatur Stube",
+                    "type": "TemperatureSensor",
+                    "currenttemperature": "EG.Stube.Temperatur"
+                },
+                {
+                    "name": "Heizung Bad",
+                    "type": "Thermostat",
+                    "currenttemperature": "OG.Bad.Temperatur",
+                    "targettemperature": "OG.Bad.Temperatur.Sollwert",
+                    "targettemperatureminimum": 18,
+                    "targettemperaturemaximum": 25
+                },                
+                {
+                    "name": "Ventilator Bad",
+                    "type": "Fan",
+                    "onoff": "OG.Bad.Ventilator"
+                },
+                {
+                    "name": "Bürolicht",
+                    "type": "Lightbulb",
+                    "onoff": "EG.Buero.Licht"
+                },
+                {
+                    "name": "Stubenlicht",
+                    "type": "Lightbulb",
+                    "onoff": "EG.Stube.Licht"
+                },
+                {
+                    "name": "Schlafzimmerlicht",
+                    "type": "Lightbulb",
+                    "onoff": "OG.SZSS.Licht",
+                    "brightness": "OG.SZSS.Licht.dimmen"
+                },
+                {
+                    "name": "Rolladen Büro",
+                    "type": "WindowCovering",
+                    "updown": "EG.Buero.Rolladen.AufAb",
+                    "currentposition": "EG.Buero.Rolladen.Position",
+                    "targetposition": "EG.Buero.Rolladen.Position",
+                    "inverted": true
+                },
+                {
+                    "name": "Bewegungsmelder Küche",
+                    "type": "MotionSensor",
+                    "motionstate": "EG.Kueche.Praesenz"
+                },
+                {
+                    "name": "Terassentür Küche",
+                    "type": "ContactSensor",
+                    "contactsensorstate": "EG.Kueche.Tuer",
+                    "inverted": true
+                },
+                {
+                    "name": "Fenster Esszimmer",
+                    "type": "ContactSensor",
+                    "contactsensorstate": "EG.Esszimmer.Fenster",
+                    "inverted": true
+                },
+                {
+                    "name": "Präsenzsmelder Esszimmer",
+                    "type": "OccupancySensor",
+                    "motiondetected": "EG.Esszimmer.Praesenz"
+                }
+
+            ]
+        }
+    ],
+
+    "description": "This is my development config file."
+
+}

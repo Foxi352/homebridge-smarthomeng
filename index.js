@@ -163,6 +163,10 @@ SmartHomeNGAccessory.prototype = {
                 serial = this.config.onoff;
                 break;
             
+            case 'window':
+                myServices.push(this.getWindowService(this.config));
+                break;
+
             case 'windowcovering':
                 myServices.push(this.getWindowCoveringService(this.config));
                 break;
@@ -175,6 +179,11 @@ SmartHomeNGAccessory.prototype = {
             case 'motionsensor':
                 myServices.push(this.getMotionSensorService(this.config));
                 serial = this.config.motiondetected;
+                break;
+
+            case 'contactsensor':
+                myServices.push(this.getContactSensorService(this.config));
+                serial = this.config.contactsensorstate;
                 break;
             
             // If no supported type is found warn user and return empty services
@@ -234,7 +243,9 @@ SmartHomeNGAccessory.prototype = {
     shngregister_percent: function(name, shngitem, characteristic, inverted) {
         this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
         var callback = function (shngitem, value, inverted) {
-            //this.log("[" + this.name + "] callback for " + characteristic.displayName);
+            this.log("[" + this.name + "] callback for " + characteristic.displayName + " with value " + value);
+            if (value == true) value = 100;
+            else if (value == false) value = 0;
             characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
         }.bind(this);
         monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
@@ -517,6 +528,27 @@ SmartHomeNGAccessory.prototype = {
         return myService;
     },
     
+    // Create Window service
+    getWindowService: function(config) {
+        //this.log(config);
+        var myService = new Service.Window(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        if (config.currentposition) {
+            this.log("["+ this.name +"] Window CurrentPosition characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.CurrentPosition, "Percent", config.currentposition, inverted);
+        } 
+        if (config.targetposition) {
+            this.log("["+ this.name +"] Window TargetPosition characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.TargetPosition, "Percent", config.targetposition, inverted);
+        } 
+        this.log("["+ this.name +"] Window PositionState characteristic enabled");
+        this.bindCharacteristic(myService, Characteristic.PositionState, "Int", config.positionstate, inverted, Characteristic.PositionState.STOPPED);
+        return myService;
+    },
+
     // Create WindowCovering service
     getWindowCoveringService: function(config) {
         //this.log(config);
@@ -566,5 +598,18 @@ SmartHomeNGAccessory.prototype = {
         return myService;
     },
         
+    // Create ContactSensor service
+    getContactSensorService: function(config) {
+        var myService = new Service.ContactSensor(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        if (config.contactsensorstate) {
+            this.log("["+ this.name +"] ContactSensor ContactSensorState characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.ContactSensorState, "Bool", config.contactsensorstate, inverted);
+        } 
+        return myService;
+    },
 
 }
