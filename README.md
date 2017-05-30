@@ -68,7 +68,7 @@ You have to create a config.json in .homebridge directory. You'll find that dire
             "platform": "SmartHomeNG",
              
             "name": "SmartHomeNG",
-            "host": "srvsmarthome.xxx.lu",
+            "host": "srvsmarthome.ha.swa.lu",
             "accessories": [
                 {
                     "name": "Temperatur Stube",
@@ -89,8 +89,13 @@ You have to create a config.json in .homebridge directory. You'll find that dire
                     "onoff": "OG.Bad.Ventilator"
                 },
                 {
-                    "name": "Schaltsteckdose",
+                    "name": "Schalter",
                     "type": "Switch",
+                    "onoff": "EG.Esszimmer.Schalter"
+                },
+                {
+                    "name": "Schaltsteckdose",
+                    "type": "Outlet",
                     "onoff": "EG.Esszimmer.Steckdose"
                 },
                 {
@@ -147,3 +152,4 @@ You have to create a config.json in .homebridge directory. You'll find that dire
     "description": "This is my development config file."
 
 }
+

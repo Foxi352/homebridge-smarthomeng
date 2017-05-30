@@ -171,6 +171,10 @@ SmartHomeNGAccessory.prototype = {
                 myServices.push(this.getSwitchService(this.config));
                 break;
 
+            case 'outlet':
+                myServices.push(this.getOutletService(this.config));
+                break;
+
             case 'windowcovering':
                 myServices.push(this.getWindowCoveringService(this.config));
                 break;
@@ -626,6 +630,22 @@ SmartHomeNGAccessory.prototype = {
             this.log("["+ this.name +"] Switch on/off characteristic enabled");
             this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
         }
+        return myService;
+    },
+
+    // Create Outlet service
+    getOutletService: function(config) {
+        var myService = new Service.Outlet(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        // On (and Off)
+        if (config.onoff) {
+            this.log("["+ this.name +"] Outlet on/off characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
+        }
+        myService.getCharacteristic(Characteristic.OutletInUse).setValue(true);
         return myService;
     },
 
