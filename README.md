@@ -1,5 +1,5 @@
 # homebridge-smarthomeng
-Homebridge plugin for SmartHomeNG. This is work in progress and all devices are supported.
+Homebridge plugin for SmartHomeNG. This is work in progress and not all devices are supported yet.
 
 ## Currently supported
 This plugin currently supports the following services (and characteristics):
@@ -8,10 +8,12 @@ This plugin currently supports the following services (and characteristics):
 * Fan (on/off)
 * Temperature sensor (current temperature)
 * Thermostat (current- / target temperature)
+* Window (current- / target position)
 * Window Covering (current- / target position)
 * Motion sensor (motion detected)
 * Occupancy sensor (motion detected)
 * Contact Sensor (contact state)
+* Switch (on/off)
 
 ## Requirements
 * [SmartHomeNG](https://github.com/smarthomeNG/smarthome)
@@ -66,7 +68,7 @@ You have to create a config.json in .homebridge directory. You'll find that dire
             "platform": "SmartHomeNG",
              
             "name": "SmartHomeNG",
-            "host": "srvsmarthome.xxxx.lu",
+            "host": "srvsmarthome.xxx.lu",
             "accessories": [
                 {
                     "name": "Temperatur Stube",
@@ -85,6 +87,11 @@ You have to create a config.json in .homebridge directory. You'll find that dire
                     "name": "Ventilator Bad",
                     "type": "Fan",
                     "onoff": "OG.Bad.Ventilator"
+                },
+                {
+                    "name": "Schaltsteckdose",
+                    "type": "Switch",
+                    "onoff": "EG.Esszimmer.Steckdose"
                 },
                 {
                     "name": "Bürolicht",

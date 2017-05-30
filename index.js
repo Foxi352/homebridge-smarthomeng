@@ -167,6 +167,10 @@ SmartHomeNGAccessory.prototype = {
                 myServices.push(this.getWindowService(this.config));
                 break;
 
+            case 'switch':
+                myServices.push(this.getSwitchService(this.config));
+                break;
+
             case 'windowcovering':
                 myServices.push(this.getWindowCoveringService(this.config));
                 break;
@@ -243,9 +247,7 @@ SmartHomeNGAccessory.prototype = {
     shngregister_percent: function(name, shngitem, characteristic, inverted) {
         this.log("[" + name + "] Registering callback for '" + shngitem + "'.");
         var callback = function (shngitem, value, inverted) {
-            this.log("[" + this.name + "] callback for " + characteristic.displayName + " with value " + value);
-            if (value == true) value = 100;
-            else if (value == false) value = 0;
+            //this.log("[" + this.name + "] callback for " + characteristic.displayName + " with value " + value);
             characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
         }.bind(this);
         monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
@@ -609,6 +611,21 @@ SmartHomeNGAccessory.prototype = {
             this.log("["+ this.name +"] ContactSensor ContactSensorState characteristic enabled");
             this.bindCharacteristic(myService, Characteristic.ContactSensorState, "Bool", config.contactsensorstate, inverted);
         } 
+        return myService;
+    },
+
+    // Create Switch service
+    getSwitchService: function(config) {
+        var myService = new Service.Switch(config.name,config.name);
+        var inverted = false;
+        if (config.inverted) {
+            inverted = true;
+        }
+        // On (and Off)
+        if (config.onoff) {
+            this.log("["+ this.name +"] Switch on/off characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
+        }
         return myService;
     },
 
