@@ -498,6 +498,11 @@ SmartHomeNGAccessory.prototype = {
             this.log("["+ this.name +"] Fan on/off characteristic enabled");
             this.bindCharacteristic(myService, Characteristic.On, "Bool", config.onoff, inverted);
         }
+        // RotationSpeed
+        if (config.rotationSpeed) {
+            this.log("["+ this.name +"] Fan rotationSpeed characteristic enabled");
+            this.bindCharacteristic(myService, Characteristic.RotationSpeed, "Percent", config.rotationSpeed, inverted);
+        }
         return myService;
     },
     
