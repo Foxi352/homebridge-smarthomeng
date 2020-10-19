@@ -262,7 +262,7 @@ SmartHomeNGAccessory.prototype = {
         var callback = function (shngitem, value, inverted) {
             //this.log("[" + this.name + "] callback for " + characteristic.displayName);
             value = value * 3.6;
-            characteristic.setValue(inverted ? 100 - value : value, undefined, 'fromSHNG');
+            characteristic.setValue(inverted ? 360 - value : value, undefined, 'fromSHNG');
         }.bind(this);
         monitoring.push({name: name, characteristic: characteristic.displayName, item: shngitem, callback: callback, inverted: inverted});
     },
