@@ -9,7 +9,8 @@ var fs = require('fs');
 var path = require('path');
 
 var SmartHomeNGConnection =  require("./SmartHomeNGConnection.js").SmartHomeNGConnection;
-var milliTimeout = 300; // used to block responses while swiping
+//var milliTimeout = 300; // used to block responses while swiping
+var directCacheUpdate = true;
 var monitoring = [];
 var colorOn = "\x1b[30;47m";
 var colorOff = "\x1b[0m";
@@ -287,6 +288,22 @@ SmartHomeNGAccessory.prototype = {
         callback();
     },
 
+/** method for direct cache update (optional)
+ * (this is triggered by updates from Homebridge to update lastValue directly)
+ *
+ */
+    direct_update: function(item, value) {
+        if (directCacheUpdate) {
+            //this.log("DIRECT_UPDATE: item " + item + " with value " + value);
+            for (var i = 0; i < monitoring.length; i++) {
+            // iterate through all registered addresses
+                if (monitoring[i].item == item) {
+                    monitoring[i].lastValue = value; // or only invalidate here and read from SmartHomeNG again ?
+                }
+            }
+        }
+    },
+
 /** set methods used for creating callbacks
  *
  */
@@ -302,6 +319,7 @@ SmartHomeNGAccessory.prototype = {
             }
             this.log("[" + this.name + "] Setting " + shngitem + (inverted ? " (inverted)":"") + " boolean to %s", numericValue);
             this.shngcon.setValue(shngitem, numericValue);
+            this.direct_update(shngitem, numericValue);
             if (callback) callback();
         }
     },
@@ -321,6 +339,7 @@ SmartHomeNGAccessory.prototype = {
             }
             this.log("[" + this.name + "] Setting " + shngitem + " percentage to %s", numericValue);
             this.shngcon.setValue(shngitem, numericValue);
+            this.direct_update(shngitem, numericValue);
             if (callback) callback();
         }
     },
@@ -343,6 +362,7 @@ SmartHomeNGAccessory.prototype = {
             numericValue = numericValue / 3.6; //convert Angle to Percentage (0-100)
 
             this.shngcon.setValue(shngitem, numericValue);
+            this.direct_update(shngitem, numericValue);
             if (callback) callback();
         }
     },
@@ -359,6 +379,7 @@ SmartHomeNGAccessory.prototype = {
             }
             this.log("["+ this.name +"] Setting " + shngitem + " int to %s", numericValue);
             this.shngcon.setValue(shngitem, numericValue);
+            this.direct_update(shngitem, numericValue);
             if (callback) callback();
         }
     },
@@ -375,6 +396,7 @@ SmartHomeNGAccessory.prototype = {
             }
             this.log("["+ this.name +"] Setting " + shngitem + " float to %s", numericValue);
             this.shngcon.setValue(shngitem, numericValue);
+            this.direct_update(shngitem, numericValue);
             if (callback) callback();
         }
     },
