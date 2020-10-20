@@ -89,6 +89,12 @@ You have to create a config.json in .homebridge directory. You'll find that dire
                     "onoff": "OG.Bad.Ventilator"
                 },
                 {
+                    "name": "Lüftung",
+                    "type": "Fan",
+                    "onoff": "EG.Lüftung"
+                    "rotationSpeed": "EG.LüftungSpeed"
+                },
+                {
                     "name": "Schalter",
                     "type": "Switch",
                     "onoff": "EG.Esszimmer.Schalter"
