@@ -158,4 +158,3 @@ You have to create a config.json in .homebridge directory. You'll find that dire
     "description": "This is my development config file."
 
 }
-
