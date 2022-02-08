@@ -18,9 +18,13 @@ import { Lightbulb } from './Accessories/Lightbulb';
 import { TemperatureSensor } from './Accessories/TemperatureSensor';
 import { Thermostat } from './Accessories/Thermostat';
 
-const uncapitalizeKeys = (obj) => {
-    const isObject = o => Object.prototype.toString.apply(o) === '[object Object]';
-    const isArray = o => Object.prototype.toString.apply(o) === '[object Array]';
+function uncapitalizeKeys(obj): Record<string, unknown> {
+    function isObject(o: unknown): boolean {
+        return Object.prototype.toString.apply(o) === '[object Object]';
+    }
+    function isArray(o: unknown): boolean {
+        return Object.prototype.toString.apply(o) === '[object Array]';
+    }
 
     const transformedObj = isArray(obj) ? [] : {};
 
@@ -34,7 +38,7 @@ const uncapitalizeKeys = (obj) => {
         }
     }
     return transformedObj;
-};
+}
 
 export class SmartHomeNGPlatform implements StaticPlatformPlugin {
     public readonly Service: typeof Service = this.api.hap.Service;
@@ -61,10 +65,8 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
 
         // convert all configured accessory keys to lowercase to tolerate user case errors
         const accessories = JSON.parse(JSON.stringify(uncapitalizeKeys(this.config.accessories)));
-        // this.log.debug(accessories);
 
         for (const accessory of accessories) {
-            //this.log.debug(accessory);
             if (!accessory.manufacturer) {
                 accessory.manufacturer = 'SmartHomeNG';
             }
