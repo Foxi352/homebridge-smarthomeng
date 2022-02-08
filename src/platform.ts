@@ -17,6 +17,7 @@ import { Fan } from './Accessories/Fan';
 import { Lightbulb } from './Accessories/Lightbulb';
 import { TemperatureSensor } from './Accessories/TemperatureSensor';
 import { Thermostat } from './Accessories/Thermostat';
+import { WindowCovering } from './Accessories/WindowCovering';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -113,11 +114,17 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                         devices.push(new TemperatureSensor(this, accessory));
                         break;
 
-                    // TemperatureSensor
+                    // Thermostat
                     case 'thermostat':
                         devices.push(new Thermostat(this, accessory));
                         break;
 
+                    // WindowCovering
+                    case 'windowcovering':
+                        devices.push(new WindowCovering(this, accessory));
+                        break;
+
+                    // Show error for (yet ?) unsupported device
                     default:
                         this.log.warn('Accessory type', accessory.type, 'for', accessory.name, 'not recognized !');
                         break;

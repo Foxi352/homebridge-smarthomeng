@@ -18,7 +18,8 @@
     "noImplicitAny": false
   },
   "include": [
-    "src/"
+    "src/",
+    "src/Accessories/.ts"
   ],
   "exclude": [
     "**/*.spec.ts"
