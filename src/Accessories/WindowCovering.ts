@@ -87,7 +87,7 @@ export class WindowCovering implements AccessoryPlugin {
     }
 
     shngCurrentPositionCallback(value: unknown): void {
-        this.platform.log.error('shngCurrentPositionCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+        this.platform.log.debug('shngCurrentPositionCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'number') {
             this.currentPosition = this.convertRange(
                 value as number,
@@ -104,7 +104,7 @@ export class WindowCovering implements AccessoryPlugin {
 
 
     shngTargetPositionCallback(value: unknown): void {
-        this.platform.log.error('shngTargetPositionCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+        this.platform.log.debug('shngTargetPositionCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'number') {
             this.targetPosition = this.convertRange(
                 value as number,
