@@ -18,6 +18,7 @@ import { Lightbulb } from './Accessories/Lightbulb';
 import { TemperatureSensor } from './Accessories/TemperatureSensor';
 import { Thermostat } from './Accessories/Thermostat';
 import { WindowCovering } from './Accessories/WindowCovering';
+import { ContactSensor } from './Accessories/ContactSensor';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -87,6 +88,11 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                     // Motion sensor
                     case 'motionsensor':
                         devices.push(new MotionSensor(this, accessory));
+                        break;
+
+                    // Contact sensor
+                    case 'contactsensor':
+                        devices.push(new ContactSensor(this, accessory));
                         break;
 
                     // Switch
