@@ -19,7 +19,7 @@ import { TemperatureSensor } from './Accessories/TemperatureSensor';
 import { Thermostat } from './Accessories/Thermostat';
 import { WindowCovering } from './Accessories/WindowCovering';
 import { ContactSensor } from './Accessories/ContactSensor';
-import { Doorbell } from './Accessories/DoorBell';
+import { Doorbell } from './Accessories/Doorbell';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
