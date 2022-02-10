@@ -20,6 +20,8 @@ type RGB = {
     B: number;
 };
 
+enum LightType { ONOFF, DIMMABLE, RGB, RGBW }
+
 export class Lightbulb implements AccessoryPlugin {
     private readonly deviceService: Service;
     private readonly informationService: Service;
@@ -33,7 +35,7 @@ export class Lightbulb implements AccessoryPlugin {
     private W = 0; WMin = 0; WMax = 100;
     private hue = 0;
     private saturation = 0;
-    private lightType = 0; // 0 = OnOff Light, 1 = Dimmable Light, 2 = RGB, 3 = RGBW
+    private lightType = LightType.ONOFF;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(private readonly platform: SmartHomeNGPlatform, private readonly accessory: any) {
@@ -51,7 +53,7 @@ export class Lightbulb implements AccessoryPlugin {
                 .onGet(this.getBrightness.bind(this))
                 .onSet(this.setBrightness.bind(this));
             this.platform.shng.addMonitor(accessory.brightness, this.shngBrightnessCallback.bind(this));
-            this.lightType = 1; // Dimmable light
+            this.lightType = LightType.DIMMABLE;
         }
 
         // If RGB or RGBW light
@@ -66,11 +68,11 @@ export class Lightbulb implements AccessoryPlugin {
             this.platform.shng.addMonitor(accessory.R, this.shngRCallback.bind(this));
             this.platform.shng.addMonitor(accessory.G, this.shngGCallback.bind(this));
             this.platform.shng.addMonitor(accessory.B, this.shngBCallback.bind(this));
-            this.lightType = 2; // RGB light
+            this.lightType = LightType.RGB;
 
             if (accessory.w) {
                 this.platform.shng.addMonitor(accessory.W, this.shngWCallback.bind(this));
-                this.lightType = 3; // RGBW light
+                this.lightType = LightType.RGBW;
             }
         }
 
@@ -91,7 +93,7 @@ export class Lightbulb implements AccessoryPlugin {
         this.BMin = accessory.bmin ? accessory.bmin : this.BMin;
         this.WMax = accessory.wmax ? accessory.wmax : this.WMax;
         this.WMin = accessory.wmin ? accessory.wmin : this.WMin;
-        this.platform.log.info("Lightbulb '%s' created!", accessory.name);
+        this.platform.log.info("Lightbulb '%s' created! (" + LightType[this.lightType] + ')', accessory.name);
     }
 
     identify(): void {
@@ -152,13 +154,13 @@ export class Lightbulb implements AccessoryPlugin {
     }
 
     updateColor(): void {
-        if (this.lightType === 3) {
+        if (this.lightType === LightType.RGBW) {
             const rgbw: RGBW = this.hsb2rgbw(this.hue, this.saturation, this.brightness);
             this.platform.shng.setItem(this.accessory.r, this.convertRange(rgbw.R, 0, 100, this.RMin, this.RMax));
             this.platform.shng.setItem(this.accessory.g, this.convertRange(rgbw.G, 0, 100, this.GMin, this.GMax));
             this.platform.shng.setItem(this.accessory.b, this.convertRange(rgbw.B, 0, 100, this.BMin, this.BMax));
             this.platform.shng.setItem(this.accessory.w, this.convertRange(rgbw.W, 0, 100, this.WMin, this.WMax));
-        } else if (this.lightType === 2) {
+        } else if (this.lightType === LightType.RGB) {
             const rgb: RGB = this.hsb2rgb(this.hue, this.saturation, this.brightness);
             this.platform.shng.setItem(this.accessory.r, this.convertRange(rgb.R, 0, 100, this.RMin, this.RMax));
             this.platform.shng.setItem(this.accessory.g, this.convertRange(rgb.G, 0, 100, this.GMin, this.GMax));

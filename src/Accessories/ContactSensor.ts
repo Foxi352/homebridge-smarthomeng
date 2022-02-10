@@ -28,7 +28,7 @@ export class ContactSensor implements AccessoryPlugin {
                 .setCharacteristic(this.platform.Characteristic.Model, accessory.model)
                 .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.contactstate);
 
-        this.platform.shng.addMonitor(accessory.contactstate, this.shngCallback.bind(this));
+        this.platform.shng.addMonitor(accessory.contactstate, this.shngContactStateCallback.bind(this));
         this.platform.log.info('ContactSensor', accessory.name, 'created!');
     }
 
@@ -49,8 +49,8 @@ export class ContactSensor implements AccessoryPlugin {
         return this.contactState;
     }
 
-    shngCallback(value: unknown): void {
-        this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+    shngContactStateCallback(value: unknown): void {
+        this.platform.log.debug('shngContactStateCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'boolean') {
             if (value) {
                 this.contactState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;

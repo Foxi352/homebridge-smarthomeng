@@ -28,7 +28,7 @@ export class OccupancySensor implements AccessoryPlugin {
                 .setCharacteristic(this.platform.Characteristic.Model, accessory.model)
                 .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.occupancydetected);
 
-        this.platform.shng.addMonitor(accessory.occupancydetected, this.shngCallback.bind(this));
+        this.platform.shng.addMonitor(accessory.occupancydetected, this.shngAccupancyDetectedCallback.bind(this));
         this.platform.log.info('OccupancySensor', accessory.name, 'created!');
     }
 
@@ -45,8 +45,8 @@ export class OccupancySensor implements AccessoryPlugin {
         return this.occupencyDetected;
     }
 
-    shngCallback(value: unknown): void {
-        this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+    shngAccupancyDetectedCallback(value: unknown): void {
+        this.platform.log.debug('shngAccupancyDetectedCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'boolean') {
             if (value) {
                 this.occupencyDetected = this.platform.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;

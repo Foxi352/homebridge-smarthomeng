@@ -4,8 +4,6 @@ import {
     Service,
     Nullable,
 } from 'homebridge';
-import { setMaxListeners } from 'process';
-import { setFlagsFromString } from 'v8';
 
 import { SmartHomeNGPlatform } from '../platform';
 
@@ -134,7 +132,7 @@ export class WindowCovering implements AccessoryPlugin {
         if (inverted) {
             result = newmax - result;
         }
-        this.platform.log.warn(
+        this.platform.log.debug(
             'Transposing', value,
             'from range', oldmin, '-', oldmax,
             'to', newmin, '-', newmax,

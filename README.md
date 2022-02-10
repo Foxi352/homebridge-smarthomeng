@@ -68,34 +68,34 @@ Optional:
 }
 ```
 ### Doorbell
-TODO
+*TODO*
 
 ### Fan
-TODO
+*TODO*
 
 ### LightBulb
-TODO
+*TODO*
 
 ### Occupancy sensor
-TODO
+*TODO*
 
 ### Motion sensor
-TODO
+*TODO*
 
 ### Contact sensor
-TODO
+*TODO*
 
 ### Switch
-TODO
+*TODO*
 
 ### Outlet
-TODO
+*TODO*
 
 ### Temperature sensor
-TODO
+*TODO*
 
 ### Thermostat
-TODO
+*TODO*
 
 ### WindowCovering
 In addition to the common characteristics the following are available.
