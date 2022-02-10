@@ -170,19 +170,34 @@ export class Lightbulb implements AccessoryPlugin {
     }
 
     updateColor(): void {
-        if (this.lightType === LightType.RGBW) {
-            const rgbw: RGBW = this.hsb2rgbw(this.hue, this.saturation, this.brightness);
-            this.platform.shng.setItem(this.accessory.r, this.convertRange(rgbw.R, 0, 100, this.RMin, this.RMax));
-            this.platform.shng.setItem(this.accessory.g, this.convertRange(rgbw.G, 0, 100, this.GMin, this.GMax));
-            this.platform.shng.setItem(this.accessory.b, this.convertRange(rgbw.B, 0, 100, this.BMin, this.BMax));
-            this.platform.shng.setItem(this.accessory.w, this.convertRange(rgbw.W, 0, 100, this.WMin, this.WMax));
-        } else if (this.lightType === LightType.RGB) {
-            const rgb: RGB = this.hsb2rgb(this.hue, this.saturation, this.brightness);
-            this.platform.shng.setItem(this.accessory.r, this.convertRange(rgb.R, 0, 100, this.RMin, this.RMax));
-            this.platform.shng.setItem(this.accessory.g, this.convertRange(rgb.G, 0, 100, this.GMin, this.GMax));
-            this.platform.shng.setItem(this.accessory.b, this.convertRange(rgb.B, 0, 100, this.BMin, this.BMax));
-        } else {
-            this.platform.log.warn('Cannot update color of', this.name, 'because RGB(W) items are missing');
+        switch (this.lightType) {
+
+            case LightType.RGBW: {
+                const rgbw: RGBW = this.hsb2rgbw(this.hue, this.saturation, this.brightness);
+                this.platform.shng.setItem(this.accessory.r, this.convertRange(rgbw.R, 0, 100, this.RMin, this.RMax));
+                this.platform.shng.setItem(this.accessory.g, this.convertRange(rgbw.G, 0, 100, this.GMin, this.GMax));
+                this.platform.shng.setItem(this.accessory.b, this.convertRange(rgbw.B, 0, 100, this.BMin, this.BMax));
+                this.platform.shng.setItem(this.accessory.w, this.convertRange(rgbw.W, 0, 100, this.WMin, this.WMax));
+                break;
+            }
+
+            case LightType.RGB: {
+                const rgb: RGB = this.hsb2rgb(this.hue, this.saturation, this.brightness);
+                this.platform.shng.setItem(this.accessory.r, this.convertRange(rgb.R, 0, 100, this.RMin, this.RMax));
+                this.platform.shng.setItem(this.accessory.g, this.convertRange(rgb.G, 0, 100, this.GMin, this.GMax));
+                this.platform.shng.setItem(this.accessory.b, this.convertRange(rgb.B, 0, 100, this.BMin, this.BMax));
+                break;
+            }
+
+            case LightType.HSB:
+                this.platform.shng.setItem(this.accessory.hue, this.hue);
+                this.platform.shng.setItem(this.accessory.saturation, this.saturation);
+                this.platform.shng.setItem(this.accessory.brightness, this.brightness);
+                break;
+
+            default:
+                this.platform.log.warn('Cannot update color of', this.name, 'because RGB(W) items are missing');
+                break;
         }
     }
 

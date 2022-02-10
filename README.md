@@ -48,23 +48,36 @@ Below is what i did on my Debian Bullseye installation:
 ## Configuration
 If you already have a working homebridge installation just add the platform section into your existing config. If you are a new homebridge user you have to create a `config.json` file in the `.homebridge` directory. You'll find that directory in your home folder.
 
-### Common characteristics
+### Platform configuration
+The following parameters are available to configure the plugin as platform in homebridge.
+```json
+{
+	"platform": "SmartHomeNG",
+	"name": "SmartHomeNG",
+	"host": "<your SHNG server name or IP>",
+	"port": 2425,
+	"tls": true,
+}
+```
+If the `port` and `tls` parameters are not specified the plugin defaults to port 2424 without tls encryption.
+
+### Common accessories characteristics
 The following characteristics are valid for all accessories.  
 
 Mandatory:
 
 ```json
 {
-"type": "OccupancySensor",
-"name": "Presence kitchen",
+	"type": "OccupancySensor",
+	"name": "Presence kitchen",
 }
 ```
 
 Optional:
 ```json
 {
-"manufacturer": "Preussen",
-"model": "Motion 360 KNX",
+	"manufacturer": "Preussen",
+	"model": "Motion 360 KNX",
 }
 ```
 ### Doorbell
@@ -103,8 +116,8 @@ In addition to the common characteristics the following are available.
 Mandatory:
 ```json
 {
-"CurrentPosition": "EG.Buero.Rolladen.Position",
-"TargetPosition": "EG.Buero.Rolladen.ZielPosition",
+	"CurrentPosition": "EG.Buero.Rolladen.Position",
+	"TargetPosition": "EG.Buero.Rolladen.ZielPosition",
 }
 ```
 The current moving state and direction is automatically derived from the difference between the current and target position.
@@ -112,12 +125,12 @@ The current moving state and direction is automatically derived from the differe
 Optional:
 ```json
 {
-"CurrentPositionMin": 0,
-"CurrentPositionMax": 255,
-"CurrentPositionInverted": true,
-"TargetPositionMin": 0,
-"TargetPositionMax": 255,
-"TargetPositionInverted": true
+	"CurrentPositionMin": 0,
+	"CurrentPositionMax": 255,
+	"CurrentPositionInverted": true,
+	"TargetPositionMin": 0,
+	"TargetPositionMax": 255,
+	"TargetPositionInverted": true
 }
 ```
 HomeKit works with values between 0 and 100 where 0 is completely closed and 100 is open.  
@@ -141,6 +154,8 @@ This is an example config file which just uses this plugin and some example Smar
             "platform": "SmartHomeNG",
             "name": "SmartHomeNG",
             "host": "smarthome.iot.wagener.family",
+            "port": 2425,
+            "tls": true,
             "accessories": [
                 {
                     "type": "Outlet",

@@ -54,7 +54,11 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
         public readonly api: API,
     ) {
         log.debug('Using config file', api.user.configPath());
-        this.shng = new SmartHomeNG(this, 'ws://smarthome.iot.wagener.family:2424/');
+        const host = this.config.host ? this.config.host : 'smarthome.local';
+        const port = this.config.port ? this.config.port : '2424';
+        const protocol = this.config.tls ? 'wss' : 'ws';
+        const url = protocol + '://' + host + ':' + port + '/';
+        this.shng = new SmartHomeNG(this, url);
 
         this.api.on('didFinishLaunching', () => {
             log.debug('Executed didFinishLaunching callback');
