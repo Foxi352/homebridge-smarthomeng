@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "SmartHomeNG-dev",
+  "pluginAlias": "SmartHomeNG",
   "pluginType": "platform",
   "singular": true,
   "schema": {
