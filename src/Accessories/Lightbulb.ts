@@ -20,7 +20,7 @@ type RGB = {
     B: number;
 };
 
-enum LightType { ONOFF, DIMMABLE, RGB, RGBW }
+enum LightType { ONOFF, DIMMABLE, RGB, RGBW, HSB }
 
 export class Lightbulb implements AccessoryPlugin {
     private readonly deviceService: Service;
@@ -49,15 +49,31 @@ export class Lightbulb implements AccessoryPlugin {
         this.platform.shng.addMonitor(accessory.on, this.shngOnCallback.bind(this));
 
         if (accessory.brightness) {
+            this.lightType = LightType.DIMMABLE;
+        }
+
+        if (accessory.hue && accessory.saturation && accessory.brightness) {
+            this.lightType = LightType.HSB;
+        }
+
+        if (accessory.r && accessory.g && accessory.b) {
+            this.lightType = LightType.RGB;
+            if (accessory.w) {
+                this.lightType = LightType.RGBW;
+            }
+        }
+
+        // Characteristic dimmable is valid for every light except simple ON/OFF
+        if (this.lightType !== LightType.ONOFF) {
             this.deviceService.getCharacteristic(this.platform.Characteristic.Brightness)
                 .onGet(this.getBrightness.bind(this))
                 .onSet(this.setBrightness.bind(this));
             this.platform.shng.addMonitor(accessory.brightness, this.shngBrightnessCallback.bind(this));
-            this.lightType = LightType.DIMMABLE;
         }
 
-        // If RGB or RGBW light
-        if (accessory.r && accessory.g && accessory.b) {
+
+        // If HSB, RGB or RGBW light
+        if (this.lightType === LightType.HSB || this.lightType === LightType.RGB || this.lightType === LightType.RGBW) {
             this.deviceService.getCharacteristic(this.platform.Characteristic.Hue)
                 .onGet(this.getHue.bind(this))
                 .onSet(this.setHue.bind(this));
@@ -65,16 +81,16 @@ export class Lightbulb implements AccessoryPlugin {
             this.deviceService.getCharacteristic(this.platform.Characteristic.Saturation)
                 .onGet(this.getSaturation.bind(this))
                 .onSet(this.setSaturation.bind(this));
-            this.platform.shng.addMonitor(accessory.R, this.shngRCallback.bind(this));
-            this.platform.shng.addMonitor(accessory.G, this.shngGCallback.bind(this));
-            this.platform.shng.addMonitor(accessory.B, this.shngBCallback.bind(this));
-            this.lightType = LightType.RGB;
-
-            if (accessory.w) {
-                this.platform.shng.addMonitor(accessory.W, this.shngWCallback.bind(this));
-                this.lightType = LightType.RGBW;
+            if (this.lightType === LightType.RGB || this.lightType === LightType.RGBW) {
+                this.platform.shng.addMonitor(accessory.R, this.shngRCallback.bind(this));
+                this.platform.shng.addMonitor(accessory.G, this.shngGCallback.bind(this));
+                this.platform.shng.addMonitor(accessory.B, this.shngBCallback.bind(this));
+                if (this.lightType === LightType.RGBW) {
+                    this.platform.shng.addMonitor(accessory.W, this.shngWCallback.bind(this));
+                }
             }
         }
+
 
 
         this.informationService =
