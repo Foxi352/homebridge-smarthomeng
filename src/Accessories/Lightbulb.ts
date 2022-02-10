@@ -196,7 +196,7 @@ export class Lightbulb implements AccessoryPlugin {
                 break;
 
             default:
-                this.platform.log.warn('Cannot update color of', this.name, 'because RGB(W) items are missing');
+                this.platform.log.debug('Cannot update color of', this.name, 'because the light does not support colors');
                 break;
         }
     }

@@ -10,6 +10,24 @@
         "type": "string",
         "required": true,
         "default": "SmartHomeNG"
+      },
+      "host": {
+        "title": "SHNG Host",
+        "type": "string",
+        "required": true,
+        "default": "smarthome.local"
+      },
+      "port": {
+        "title": "SHNG Port",
+        "type": "number",
+        "required": true,
+        "default": 2424
+      },
+      "tls": {
+        "title": "TLS enabled",
+        "type": "boolean",
+        "required": true,
+        "default": false
       }
     }
   }
