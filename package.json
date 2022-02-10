@@ -27,7 +27,6 @@
     "homebridge-plugin"
   ],
   "dependencies": {
-    "lodash": "^4.17.21",
     "ws": "^8.4.2"
   },
   "devDependencies": {

@@ -19,6 +19,7 @@ import { TemperatureSensor } from './Accessories/TemperatureSensor';
 import { Thermostat } from './Accessories/Thermostat';
 import { WindowCovering } from './Accessories/WindowCovering';
 import { ContactSensor } from './Accessories/ContactSensor';
+import { Doorbell } from './Accessories/DoorBell';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -93,6 +94,11 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                     // Contact sensor
                     case 'contactsensor':
                         devices.push(new ContactSensor(this, accessory));
+                        break;
+
+                    // Doorbell
+                    case 'doorbell':
+                        devices.push(new Doorbell(this, accessory));
                         break;
 
                     // Switch
