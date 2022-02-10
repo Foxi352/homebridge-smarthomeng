@@ -288,6 +288,13 @@ export class Lightbulb implements AccessoryPlugin {
     }
 
     convertRange(value: number, oldmin: number, oldmax: number, newmin: number, newmax: number): number {
-        return (((value - oldmin) * (newmax - newmin)) / (oldmax - oldmin)) + newmin;
+        const result = (((value - oldmin) * (newmax - newmin)) / (oldmax - oldmin)) + newmin;
+        this.platform.log.debug(
+            'Transposing', value,
+            'from range', oldmin, '-', oldmax,
+            'to', newmin, '-', newmax,
+            '=', result,
+        );
+        return result;
     }
 }
