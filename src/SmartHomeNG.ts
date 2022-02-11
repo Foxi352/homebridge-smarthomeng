@@ -79,6 +79,7 @@ export class SmartHomeNG {
     }
 
     setItem(item: string, value: unknown): void {
+        this.platform.log.info('Sending value', value, 'for', item);
         const command = { 'cmd': 'item', 'id': item, 'val': value };
         this.send(command);
     }
