@@ -53,34 +53,42 @@ If you already have a working homebridge installation just add the platform sect
 
 ### Platform configuration
 The following parameters are available to configure the plugin as platform in homebridge.
+
+| Parameter | Possible values                        | Mandatory | Description                                         |
+|:----------|:---------------------------------------|:----------|:----------------------------------------------------|
+| platform  | Any \<string>                          | Yes       | Internal name of your platform                      |
+| name      | Any \<string>                          | Yes       | Visible name in HomeKit                             |
+| host      | IP address or FQDN of your SHNG server | Yes       | Your SHNG host                                      |
+| port      | Port \<number>                         | No        | Listening port of websocket module. Default is 2424 |
+| tls       | \<boolean>                             | No        | Should TLS encryption be used. Defaults is 'false'  |
+
+#### Example configuration:
 ```json
 {
-	"platform": "SmartHomeNG",
-	"name": "SmartHomeNG",
-	"host": "<your SHNG server name or IP>",
-	"port": 2425,
-	"tls": true,
+    "platform": "SmartHomeNG",
+    "name": "SmartHomeNG",
+    "host": "smarthome.my.domain",
+    "port": 2425,
+    "tls": true,
 }
 ```
-If the `port` and `tls` parameters are not specified the plugin defaults to port 2424 without tls encryption.
-
 ### Common accessories characteristics
 The following characteristics are valid for all accessories:
 
-| Parameter    | Possible values                               | Mandatory | Description                     |
-|:-------------|:----------------------------------------------|:----------|:--------------------------------|
-| type         | <type> from the above list of supported types | Yes       | Type of accessory               |
-| name         | Any \<string>                                 | Yes       | Visible name in HomeKit         |
-| manufacturer | Any \<string>                                 | No        | Visible manufacturer in HomeKit |
-| model        | Any \<string>                                 | No        | Visible model in HomeKit        |
+| Parameter    | Possible values                                | Mandatory | Description                     |
+|:-------------|:-----------------------------------------------|:----------|:--------------------------------|
+| type         | \<type> from the above list of supported types | Yes       | Type of accessory               |
+| name         | Any \<string>                                  | Yes       | Visible name in HomeKit         |
+| manufacturer | Any \<string>                                  | No        | Visible manufacturer in HomeKit |
+| model        | Any \<string>                                  | No        | Visible model in HomeKit        |
 
 #### Example:
 ```json
 {
-	"type": "OccupancySensor",
-	"name": "Presence kitchen",
-	"manufacturer": "Preussen",
-	"model": "Motion 360 KNX",
+    "type": "OccupancySensor",
+    "name": "Presence kitchen",
+    "manufacturer": "Preussen",
+    "model": "Motion 360 KNX",
 }
 ```
 ### Doorbell
@@ -90,13 +98,13 @@ Further investigation is needed, but for now it still works.
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter    | Possible values | Mandatory | Description                            |
 |:-------------|:----------------|:----------|:---------------------------------------|
-| SinglePress  | <item>          | Yes       | SHNG item to monitor for doorbell ring |
+| SinglePress  | \<item>         | Yes       | SHNG item to monitor for doorbell ring |
 
 #### Example:
 ```json
 {
-	"type": "Doorbell",
-	"name": "Main door",
+    "type": "Doorbell",
+    "name": "Main door",
     "SinglePress": "Technik.Asterisk.Klingel"
 }
 ```
@@ -107,14 +115,14 @@ For now this accessory only supports turning the fan on and off. Further improve
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter | Possible values | Mandatory | Description                            |
 |:----------|:----------------|:----------|:---------------------------------------|
-| Active    | <item>          | Yes       | SHNG item to set and get the fan state |
+| Active    | \<item>         | Yes       | SHNG item to set and get the fan state |
 
 #### Example:
 
 ```json
 {
-	"type": "Fan",
-	"name": "Fan bathroom",
+    "type": "Fan",
+    "name": "Fan bathroom",
     "Active": "OG.Bad.Ventilator"
 }
 ```
@@ -128,16 +136,16 @@ This sensor is tripped if it detects presence in a room.
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter         | Possible values | Mandatory | Description                       |
 |:------------------|:----------------|:----------|:----------------------------------|
-| OccupancyDetected | <item>          | Yes       | SHNG item to monitor for presence |
+| OccupancyDetected | \<item>         | Yes       | SHNG item to monitor for presence |
 
 
 #### Example:
 ```json
 {
-	"type": "OccupancySensor",
-	"name": "Presence bathroom",
-	"manufacturer": "Preussen",
-	"model": "Motion 360 KNX",
+    "type": "OccupancySensor",
+    "name": "Presence bathroom",
+    "manufacturer": "Preussen",
+    "model": "Motion 360 KNX",
     "OccupancyDetected": "OG.Bad.Praesenz"
 }
 ```
@@ -148,14 +156,14 @@ This sensor is tripped if it detects motion in a room.
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter      | Possible values | Mandatory | Description                     |
 |:---------------|:----------------|:----------|:--------------------------------|
-| MotionDetected | <item>          | Yes       | SHNG item to monitor for motion |
+| MotionDetected | \<item>         | Yes       | SHNG item to monitor for motion |
 
 
 #### Example:
 ```json
 {
-	"type": "OccupancySensor",
-	"name": "Presence bathroom",
+    "type": "OccupancySensor",
+    "name": "Presence bathroom",
     "OccupancyDetected": "EG.Flur.Bewegung"
 }
 ```
