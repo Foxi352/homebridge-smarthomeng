@@ -317,16 +317,20 @@ CurrentHeatingCoolingState = 0 for OFF, 1 for HEAT and 2 for COOL
 This accessory type can be used for shutters or blinds. Because the differnce between HomeKit and the controlling technology, for example KNX, can be significant this accessory has a lot of parameters. Luckily most are optional.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter               | Possible values | Mandatory | Default | Description                                                       |
-|:------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
-| CurrentPosition         | \<item>         | Yes       |         | SHNG item to monitor thecurrent position                          |       
-| TargetPosition          | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
-| CurrentPositionMin      | \<number>       | No        | 0       | Your device's minimum value for current position                  |
-| CurrentPositionMax      | \<number>       | No        | 100     | Your device's maximum value for current position                  |
-| CurrentPositionInverted | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
-| TargetPositionMin       | \<number>       | No        | 0       | Your device's minimum value for target position                   |
-| TargetPositionMax       | \<number>       | No        | 100     | Your device's maximum value for target position                   |
-| TargetPositionInverted  | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
+| Parameter                  | Possible values | Mandatory | Default | Description                                                       |
+|:---------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
+| CurrentPosition            | \<item>         | Yes       |         | SHNG item to monitor thecurrent position                          |       
+| TargetPosition             | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
+| CurrentPositionMin         | \<number>       | No        | 0       | Your device's minimum value for current position                  |
+| CurrentPositionMax         | \<number>       | No        | 100     | Your device's maximum value for current position                  |
+| CurrentPositionInverted    | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
+| TargetPositionMin          | \<number>       | No        | 0       | Your device's minimum value for target position                   |
+| TargetPositionMax          | \<number>       | No        | 100     | Your device's maximum value for target position                   |
+| TargetPositionInverted     | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
+| CurrentHorizontalTiltAngle | \<item>         | No        |         | SHNG item to monitor current horizontal tilt angle                |       
+| TargetHorizontalTiltAngle  | \<item>         | No        |         | SHNG item to monitor and set the target horizontal tilt angle     |
+| CurrentVerticalTiltAngle   | \<item>         | No        |         | SHNG item to monitor current vertical tilt angle                  |       
+| TargetVerticalTiltAngle    | \<item>         | No        |         | SHNG item to monitor and set the target vertical tilt angle       |
 
 
 #### Additional comments
