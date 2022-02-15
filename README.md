@@ -128,7 +128,56 @@ For now this accessory only supports turning the fan on and off. Further improve
 ```
 
 ### LightBulb
-*TODO*
+Lightbulb can be as simple as a generic on/off light, but can also be as complex as a full RGBW led strip.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter     | Possible values | Mandatory | Default | Description                                                     |
+|:--------------|:----------------|:----------|:--------|:----------------------------------------------------------------|
+| On            | \<item>         | Yes       |         | SHNG item to switch the lightbuld on or off                     |       
+| Brightness    | \<item>         | No        |         | SHNG item to monitor and set the brigtness for a dimmable light |
+| BrightnessMin | \<number>       | No        | 0       | Your device's minimum value for brightness                      |
+| BrightnessMax | \<number>       | No        | 100     | Your device's maximum value for brightness                      |
+| Hue           | \<item>         | No        |         | SHNG item to get and set the HUE in case of a HSB light         |
+| Saturation    | \<item>         | No        |         | SHNG item to get and set the saturation in case of a HSB light  |
+| R             | \<item>         | No        |         | SHNG item for the RED color in case of RGB(W) light             |
+| RMin          | \<number>       | No        | 0       | Your device's minimum value for the RED color                   |
+| RMax          | \<number>       | No        | 100     | Your device's maximum value for RED color                       |
+| G             | \<item>         | No        |         | SHNG item for the GREEN color in case of RGB(W) light           |
+| GMin          | \<number>       | No        | 0       | Your device's minimum value for the GREEN color                 |
+| GMax          | \<number>       | No        | 100     | Your device's maximum value for GREEN color                     |
+| B             | \<item>         | No        |         | SHNG item for the BLUE color in case of RGB(W) light            |
+| BMin          | \<number>       | No        | 0       | Your device's minimum value for the BLUE color                  |
+| BMax          | \<number>       | No        | 100     | Your device's maximum value for BLUE color                      |
+
+
+#### Additional comments
+HomeKit works with values between 0 and 100 where 0 is completely dim and 100 is maximum brightness.  
+My KNX installation, as example, needs values between 0 and 255.  
+The above optional min and max parameters allow you to specify the neede range for your device. The plugin then transposes the values in both directions.
+
+#### Example (used for my KNX RGBW strip):
+```json
+{
+    "type": "Lightbulb",
+    "name": "RGBW strip living room",
+    "On": "EG.Stube.Ledleiste",
+    "Brightness": "EG.Stube.Ledleiste.dimmen",
+    "BrightnessMin": 0,
+    "BrightnessMax": 255,
+    "R": "EG.Stube.Ledleiste.R.dimmen",
+    "RMin": 0,
+    "RMax": 255,
+    "G": "EG.Stube.Ledleiste.G.dimmen",
+    "GMin": 0,
+    "GMax": 255,
+    "B": "EG.Stube.Ledleiste.B.dimmen",
+    "BMin": 0,
+    "BMax": 255,
+    "W": "EG.Stube.Ledleiste.W.dimmen",
+    "WMin": 0,
+    "WMax": 255
+}
+```
 
 ### Occupancy sensor
 This sensor is tripped if it detects presence in a room.
