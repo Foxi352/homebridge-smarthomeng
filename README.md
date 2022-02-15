@@ -187,10 +187,24 @@ This sensor shows the open / closed state of a contact (door, window, generic ..
 ```
 
 ### Switch
-*TODO*
+This accessory can monitor and change the on/off state of something. It is very similar to an outlet.
+
+| Parameter | Possible values | Mandatory | Description                             |
+|:----------|:----------------|:----------|:----------------------------------------|
+| On        | \<item>         | Yes       | SHNG item to switch something on or off |
+
+
+#### Example:
+```json
+{
+    "type": "Switch",
+    "name": "Music living-room",
+    "On": "EG.Stube.Radio"
+}
+```
 
 ### Outlet
-This sensor shows the state and switches a wall outlet. The outlet can be generic, a light, a fan, ...
+This accessory can monitor and change the on/off state of a wall outlet. The outlet can be generic, a light, a fan, ...
 
 | Parameter | Possible values | Mandatory | Description                          |
 |:----------|:----------------|:----------|:-------------------------------------|
@@ -202,12 +216,26 @@ This sensor shows the state and switches a wall outlet. The outlet can be generi
 {
     "type": "Outlet",
     "name": "Christmas tree",
-    "ContactState": "EG.Esszimmer.Steckdose"
+    "On": "EG.Esszimmer.Steckdose"
 }
 ```
 
 ### Temperature sensor
-*TODO*
+This sensor show the actual temperature
+
+| Parameter          | Possible values | Mandatory | Description                          |
+|:-------------------|:----------------|:----------|:-------------------------------------|
+| CurrentTemperature | \<item>         | Yes       | SHNG item to monitor for temperature |
+
+
+#### Example:
+```json
+{
+    "type": "TemperatureSensor",
+    "name": "Temperature WC",
+    "CurrentTemperature": "EG.WC.Temperatur"
+}
+```
 
 ### Thermostat
 *TODO*
