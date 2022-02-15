@@ -169,13 +169,42 @@ This sensor is tripped if it detects motion in a room.
 ```
 
 ### Contact sensor
-*TODO*
+This sensor shows the open / closed state of a contact (door, window, generic ...).
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter    | Possible values | Mandatory | Description                      |
+|:-------------|:----------------|:----------|:---------------------------------|
+| ContactState | \<item>         | Yes       | SHNG item to monitor for contact |
+
+
+#### Example:
+```json
+{
+    "type": "ContactSensor",
+    "name": "Window kitchen",
+    "ContactState": "EG.Kueche.Fenster"
+}
+```
 
 ### Switch
 *TODO*
 
 ### Outlet
-*TODO*
+This sensor shows the state and switches a wall outlet. The outlet can be generic, a light, a fan, ...
+
+| Parameter | Possible values | Mandatory | Description                          |
+|:----------|:----------------|:----------|:-------------------------------------|
+| On        | \<item>         | Yes       | SHNG item to switch outlet on or off |
+
+
+#### Example:
+```json
+{
+    "type": "Outlet",
+    "name": "Christmas tree",
+    "ContactState": "EG.Esszimmer.Steckdose"
+}
+```
 
 ### Temperature sensor
 *TODO*
