@@ -118,17 +118,28 @@ export class WindowCovering implements AccessoryPlugin {
     }
 
     updateDirection() {
+        let direction;
         if (this.targetPosition < this.currentPosition) {
+            direction = 'DECREASING';
             this.positionState = this.platform.Characteristic.PositionState.DECREASING;
         } else if (this.targetPosition > this.currentPosition) {
+            direction = 'INCREASING';
             this.positionState = this.platform.Characteristic.PositionState.INCREASING;
         } else {
+            direction = 'STOPPED';
             this.positionState = this.platform.Characteristic.PositionState.STOPPED;
         }
+        this.platform.log.debug(
+            'updateDirection for', this.accessory.name,
+            ': current =', this.currentPosition,
+            'target =', this.targetPosition,
+            'direction:', direction,
+        );
     }
 
     convertRange(value: number, oldmin: number, oldmax: number, newmin: number, newmax: number, inverted: boolean): number {
         let result = (((value - oldmin) * (newmax - newmin)) / (oldmax - oldmin)) + newmin;
+        result = Math.round(result);
         if (inverted) {
             result = newmax - result;
         }

@@ -3,19 +3,22 @@
 **Version v2 is a complete rewrite from scratch and a breaking update.**  
 You need to adapt your `config.json` !
 
-## Currently supported
+## Currently supported accessories
 This plugin currently supports the following services (and characteristics):
 
-* LightBulb (on/off, brightness, hue, saturation, r, g, b, w)
-* Fan (active)
-* TemperatureSensor (current temperature)
-* Thermostat (current- / target temperature, currentheatingcoolingstate)
-* MotionSensor (motion detected)
-* OccupancySensor (presence detected)
-* ContactSensor (contact state)
-* Switch (on/off)
-* Outlet (on/off)
-* WindowCovering (CurrentPosition, TargetPosition).
+| Type                                    | Description                                             | 
+|:----------------------------------------|:--------------------------------------------------------|
+| ContactSensor                           | Simple contact sensor, for example for windows          |
+| [Doorbell](#doorbell)                   | Doorbell, sends message to devices on ring              |
+| [Fan](#fan)                             | Simple on/off fan, may be extended in future            |
+| [Lightbulb](#lightbulb)                 | Everything, from simple light to dimmable, RGB and RGBW |
+| [MotionSensor](#motionsensor)           | Detects and reports motion                              |
+| [OccupancySensor](#occupancysensor)     | Detects presence in a room                              |
+| [Outlet](#outlet)                       | Simple on/off wall outlet                               |
+| [TemperatureSensor](#temperaturesensor) | Temperature sensor                                      |
+| [Thermostat](#thermostat)               | Thermostat with temperature sensor and heating state    |
+| [Switch](#switch)                       | Simple on/off switch                                    |
+| [WindowCovering](#windowcovering)       | Window covering (shutters, blinds, ...)                 |
 
 Other accessories are being worked on and will be added as soon as ready.
 
@@ -62,38 +65,100 @@ The following parameters are available to configure the plugin as platform in ho
 If the `port` and `tls` parameters are not specified the plugin defaults to port 2424 without tls encryption.
 
 ### Common accessories characteristics
-The following characteristics are valid for all accessories.  
+The following characteristics are valid for all accessories:
 
-Mandatory:
+| Parameter    | Possible values                               | Mandatory | Description                     |
+|:-------------|:----------------------------------------------|:----------|:--------------------------------|
+| type         | <type> from the above list of supported types | Yes       | Type of accessory               |
+| name         | Any \<string>                                 | Yes       | Visible name in HomeKit         |
+| manufacturer | Any \<string>                                 | No        | Visible manufacturer in HomeKit |
+| model        | Any \<string>                                 | No        | Visible model in HomeKit        |
 
+#### Example:
 ```json
 {
 	"type": "OccupancySensor",
 	"name": "Presence kitchen",
-}
-```
-
-Optional:
-```json
-{
 	"manufacturer": "Preussen",
 	"model": "Motion 360 KNX",
 }
 ```
 ### Doorbell
-*TODO*
+A doorbell is an accessory that simply sends a message to all devices enrolled in the home that someone rang the doorbell.
+HomeKit displays a message that "This accessory is not currently supported by the Home app.".
+Further investigation is needed, but for now it still works.
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter    | Possible values | Mandatory | Description                            |
+|:-------------|:----------------|:----------|:---------------------------------------|
+| SinglePress  | <item>          | Yes       | SHNG item to monitor for doorbell ring |
+
+#### Example:
+```json
+{
+	"type": "Doorbell",
+	"name": "Main door",
+    "SinglePress": "Technik.Asterisk.Klingel"
+}
+```
 
 ### Fan
-*TODO*
+For now this accessory only supports turning the fan on and off. Further improvements are possible, but i don't have the needed hardware for testing.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter | Possible values | Mandatory | Description                            |
+|:----------|:----------------|:----------|:---------------------------------------|
+| Active    | <item>          | Yes       | SHNG item to set and get the fan state |
+
+#### Example:
+
+```json
+{
+	"type": "Fan",
+	"name": "Fan bathroom",
+    "Active": "OG.Bad.Ventilator"
+}
+```
 
 ### LightBulb
 *TODO*
 
 ### Occupancy sensor
-*TODO*
+This sensor is tripped if it detects presence in a room.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter         | Possible values | Mandatory | Description                       |
+|:------------------|:----------------|:----------|:----------------------------------|
+| OccupancyDetected | <item>          | Yes       | SHNG item to monitor for presence |
+
+
+#### Example:
+```json
+{
+	"type": "OccupancySensor",
+	"name": "Presence bathroom",
+	"manufacturer": "Preussen",
+	"model": "Motion 360 KNX",
+    "OccupancyDetected": "OG.Bad.Praesenz"
+}
+```
 
 ### Motion sensor
-*TODO*
+This sensor is tripped if it detects motion in a room.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter      | Possible values | Mandatory | Description                     |
+|:---------------|:----------------|:----------|:--------------------------------|
+| MotionDetected | <item>          | Yes       | SHNG item to monitor for motion |
+
+
+#### Example:
+```json
+{
+	"type": "OccupancySensor",
+	"name": "Presence bathroom",
+    "OccupancyDetected": "EG.Flur.Bewegung"
+}
+```
 
 ### Contact sensor
 *TODO*
