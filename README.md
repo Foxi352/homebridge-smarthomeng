@@ -338,7 +338,7 @@ HomeKit works with values between 0 and 100 where 0 is completely closed and 100
 My KNX installation, as example, needs values between 0 and 255 where 255 is completely closed and 0 is open.  
 The above optional parameters allow you to specify the neede range for your device. If needed the values can be inverted at the same time. The plugin then transposes the values in both directions.
 
-#### Example (for use with most KNX):
+#### Example (for use with most KNX shutters):
 ```json
 {
     "type": "WindowCovering",
