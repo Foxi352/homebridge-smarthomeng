@@ -75,12 +75,12 @@ The following parameters are available to configure the plugin as platform in ho
 ### Common accessories characteristics
 The following characteristics are valid for all accessories:
 
-| Parameter    | Possible values                                | Mandatory | Description                     |
-|:-------------|:-----------------------------------------------|:----------|:--------------------------------|
-| type         | \<type> from the above list of supported types | Yes       | Type of accessory               |
-| name         | Any \<string>                                  | Yes       | Visible name in HomeKit         |
-| manufacturer | Any \<string>                                  | No        | Visible manufacturer in HomeKit |
-| model        | Any \<string>                                  | No        | Visible model in HomeKit        |
+| Parameter    | Possible values                | Mandatory | Description                     |
+|:-------------|:-------------------------------|:----------|:--------------------------------|
+| type         | Supported \<type> of accessory | Yes       | Type from the [list of supported accessories](#currently-supported-accessories) |
+| name         | Any \<string>                  | Yes       | Visible name in HomeKit         |
+| manufacturer | Any \<string>                  | No        | Visible manufacturer in HomeKit |
+| model        | Any \<string>                  | No        | Visible model in HomeKit        |
 
 #### Example:
 ```json
@@ -189,6 +189,7 @@ This sensor shows the open / closed state of a contact (door, window, generic ..
 ### Switch
 This accessory can monitor and change the on/off state of something. It is very similar to an outlet.
 
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter | Possible values | Mandatory | Description                             |
 |:----------|:----------------|:----------|:----------------------------------------|
 | On        | \<item>         | Yes       | SHNG item to switch something on or off |
@@ -206,6 +207,7 @@ This accessory can monitor and change the on/off state of something. It is very 
 ### Outlet
 This accessory can monitor and change the on/off state of a wall outlet. The outlet can be generic, a light, a fan, ...
 
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter | Possible values | Mandatory | Description                          |
 |:----------|:----------------|:----------|:-------------------------------------|
 | On        | \<item>         | Yes       | SHNG item to switch outlet on or off |
@@ -221,8 +223,9 @@ This accessory can monitor and change the on/off state of a wall outlet. The out
 ```
 
 ### Temperature sensor
-This sensor show the actual temperature
+This sensor show the actual temperature.
 
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter          | Possible values | Mandatory | Description                          |
 |:-------------------|:----------------|:----------|:-------------------------------------|
 | CurrentTemperature | \<item>         | Yes       | SHNG item to monitor for temperature |
@@ -237,35 +240,66 @@ This sensor show the actual temperature
 }
 ```
 
-### Thermostat
-*TODO*
+### Thermostat
+This sensor shows and sets the actual temperature. In addition it can show the actual heating / cooling state.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter                  | Possible values | Mandatory | Description                                              |
+|:---------------------------|:----------------|:----------|:---------------------------------------------------------|
+| CurrentTemperature         | \<item>         | Yes       | SHNG item to monitor for temperature                     |
+| TargetTemperature          | \<item>         | Yes       | SHNG item to set target temperature                      |
+| CurrentHeatingCoolingState | \<item>         | Yes       | SHNG item to monitor for current heating / cooling state |
+
+#### Additional comments
+CurrentHeatingCoolingState = 0 for OFF, 1 for HEAT and 2 for COOL
+
+#### Example:
+```json
+{
+    "type": "Thermostat",
+    "name": "Temperature badroom",
+    "CurrentTemperature": "OG.SZSS.Temperatur",
+    "TargetTemperature": "OG.SZSS.Temperatur.Sollwert",
+    "CurrentHeatingCoolingState": "OG.SZSS.Temperatur.Status"
+}
+```
 
 ### WindowCovering
-In addition to the common characteristics the following are available.
+This accessory type can be used for shutters or blinds. Because the differnce between HomeKit and the controlling technology, for example KNX, can be significant this accessory has a lot of parameters. Luckily most are optional.
 
-Mandatory:
-```json
-{
-	"CurrentPosition": "EG.Buero.Rolladen.Position",
-	"TargetPosition": "EG.Buero.Rolladen.ZielPosition",
-}
-```
-The current moving state and direction is automatically derived from the difference between the current and target position.
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter               | Possible values | Mandatory | Default | Description                                                       |
+|:------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
+| CurrentPosition         | \<item>         | Yes       |         | SHNG item to monitor thecurrent position                          |       
+| TargetPosition          | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
+| CurrentPositionMin      | \<number>       | No        | 0       | Your device's minimum value for current position                  |
+| CurrentPositionMax      | \<number>       | No        | 100     | Your device's maximum value for current position                  |
+| CurrentPositionInverted | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
+| TargetPositionMin       | \<number>       | No        | 0       | Your device's minimum value for target position                   |
+| TargetPositionMax       | \<number>       | No        | 100     | Your device's maximum value for target position                   |
+| TargetPositionInverted  | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
 
-Optional:
-```json
-{
-	"CurrentPositionMin": 0,
-	"CurrentPositionMax": 255,
-	"CurrentPositionInverted": true,
-	"TargetPositionMin": 0,
-	"TargetPositionMax": 255,
-	"TargetPositionInverted": true
-}
-```
+
+#### Additional comments
 HomeKit works with values between 0 and 100 where 0 is completely closed and 100 is open.  
 My KNX installation, as example, needs values between 0 and 255 where 255 is completely closed and 0 is open.  
 The above optional parameters allow you to specify the neede range for your device. If needed the values can be inverted at the same time. The plugin then transposes the values in both directions.
+
+#### Example (for use with most KNX):
+```json
+{
+    "type": "WindowCovering",
+    "name": "Shutters office",
+    "CurrentPosition": "EG.Buero.Rolladen.Position",
+    "CurrentPositionMin": 0,
+    "CurrentPositionMax": 255,
+    "CurrentPositionInverted": true,
+    "TargetPosition": "EG.Buero.Rolladen.ZielPosition",
+    "TargetPositionMin": 0,
+    "TargetPositionMax": 255,
+    "TargetPositionInverted": true
+}
+```
 
 ### Example configuration file
 This is an example config file which just uses this plugin and some example SmartHomeNG items.
