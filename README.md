@@ -211,9 +211,9 @@ This sensor is tripped if it detects motion in a room.
 #### Example:
 ```json
 {
-    "type": "OccupancySensor",
-    "name": "Presence bathroom",
-    "OccupancyDetected": "EG.Flur.Bewegung"
+    "type": "MotionSensor",
+    "name": "Movement hallway",
+    "MotionDetected": "EG.Flur.Bewegung"
 }
 ```
 
