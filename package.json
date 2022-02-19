@@ -2,15 +2,15 @@
   "private": false,
   "displayName": "SmartHomeNG",
   "name": "homebridge-smarthomeng",
-  "version": "2.0.2",
-  "description": "A short description about what your plugin does.",
+  "version": "2.0.3",
+  "description": "SmartHomeNG plugin for Homebridge",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Foxi352/homebridge-smarthomeng2.git"
+    "url": "git://github.com/Foxi352/homebridge-smarthomeng.git"
   },
   "bugs": {
-    "url": "https://github.com/Foxi352/homebridge-smarthomeng2/issues"
+    "url": "https://github.com/Foxi352/homebridge-smarthomeng/issues"
   },
   "engines": {
     "node": ">=14.18.1",
