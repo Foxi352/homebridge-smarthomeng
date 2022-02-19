@@ -6,19 +6,20 @@ You need to adapt your `config.json` !
 ## Currently supported accessories
 This plugin currently supports the following services (and characteristics):
 
-| Type                                    | Description                                             | 
-|:----------------------------------------|:--------------------------------------------------------|
-| ContactSensor                           | Simple contact sensor, for example for windows          |
-| [Doorbell](#doorbell)                   | Doorbell, sends message to devices on ring              |
-| [Fan](#fan)                             | Simple on/off fan, may be extended in future            |
-| [Lightbulb](#lightbulb)                 | Everything, from simple light to dimmable, RGB and RGBW |
-| [MotionSensor](#motionsensor)           | Detects and reports motion                              |
-| [OccupancySensor](#occupancysensor)     | Detects presence in a room                              |
-| [Outlet](#outlet)                       | Simple on/off wall outlet                               |
-| [TemperatureSensor](#temperaturesensor) | Temperature sensor                                      |
-| [Thermostat](#thermostat)               | Thermostat with temperature sensor and heating state    |
-| [Switch](#switch)                       | Simple on/off switch                                    |
-| [WindowCovering](#windowcovering)       | Window covering (shutters, blinds, ...)                 |
+| Type                                     | Description                                             | 
+|:-----------------------------------------|:--------------------------------------------------------|
+| [ContactSensor](#contact-sensor)         | Simple contact sensor, for example for windows          |
+| [Doorbell](#doorbell)                    | Doorbell, sends message to devices on ring              |
+| [Fan](#fan)                              | Simple on/off fan, may be extended in future            |
+| [Lightbulb](#lightbulb)                  | Everything, from simple light to dimmable, RGB and RGBW |
+| [MotionSensor](#motion-sensor)           | Detects and reports motion                              |
+| [OccupancySensor](#occupancy-sensor)     | Detects presence in a room                              |
+| [Outlet](#outlet)                        | Simple on/off wall outlet                               |
+| [SecuritySystem](#security-system)       | Intrusion alarm system                                  |
+| [Switch](#switch)                        | Simple on/off switch                                    |
+| [TemperatureSensor](#temperature-sensor) | Temperature sensor                                      |
+| [Thermostat](#thermostat)                | Thermostat with temperature sensor and heating state    |
+| [WindowCovering](#window-covering)       | Window covering (shutters, blinds, ...)                 |
 
 Other accessories are being worked on and will be added as soon as ready.
 
@@ -271,6 +272,39 @@ This accessory can monitor and change the on/off state of a wall outlet. The out
 }
 ```
 
+### Security system
+This accessory can pilote your intrusion security system. That system can be a physical one operated via SHNG, or a SHNG native logic.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter    | Possible values | Mandatory | Description                                      |
+|:-------------|:----------------|:----------|:-------------------------------------------------|
+| CurrentState | \<item>         | Yes       | SHNG item to monitor for the current alarm state |
+| TargetState  | \<item>         | Yes       | SHNG item to set or get the target state         |
+
+#### Additional comments
+Valid values for 'CurrentState':
+* STAY_ARM = 0
+* AWAY_ARM = 1
+* NIGHT_ARM = 2
+* DISARMED = 3
+* ALARM_TRIGGERED = 4
+
+Valid values for 'TargetState':
+* STAY_ARM = 0
+* AWAY_ARM = 1
+* NIGHT_ARM = 2
+* DISARMED = 3
+
+#### Example:
+```json
+{
+    "type": "SecuritySystem",
+    "name": "Intrusion alarm",
+    "currentState": "Technik.Alarmanlage.Status.Ist",
+    "targetState": "Technik.Alarmanlage.Status.Soll"
+}
+```
+
 ### Temperature sensor
 This sensor show the actual temperature.
 
@@ -313,7 +347,7 @@ CurrentHeatingCoolingState = 0 for OFF, 1 for HEAT and 2 for COOL
 }
 ```
 
-### WindowCovering
+### Window covering
 This accessory type can be used for shutters or blinds. Because the differnce between HomeKit and the controlling technology, for example KNX, can be significant this accessory has a lot of parameters. Luckily most are optional.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 

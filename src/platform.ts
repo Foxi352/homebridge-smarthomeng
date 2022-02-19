@@ -9,8 +9,6 @@ import {
 } from 'homebridge';
 import { SmartHomeNG } from './SmartHomeNG';
 
-import { OccupancySensor } from './Accessories/OccupancySensor';
-import { MotionSensor } from './Accessories/MotionSensor';
 import { Switch } from './Accessories/Switch';
 import { Outlet } from './Accessories/Outlet';
 import { Fan } from './Accessories/Fan';
@@ -20,6 +18,9 @@ import { Thermostat } from './Accessories/Thermostat';
 import { WindowCovering } from './Accessories/WindowCovering';
 import { ContactSensor } from './Accessories/ContactSensor';
 import { Doorbell } from './Accessories/Doorbell';
+import { SecuritySystem } from './Accessories/SecuritySystem';
+import { OccupancySensor } from './Accessories/OccupancySensor';
+import { MotionSensor } from './Accessories/MotionSensor';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -103,6 +104,11 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                     // Doorbell
                     case 'doorbell':
                         devices.push(new Doorbell(this, accessory));
+                        break;
+
+                    // Doorbell
+                    case 'securitysystem':
+                        devices.push(new SecuritySystem(this, accessory));
                         break;
 
                     // Switch
