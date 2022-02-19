@@ -92,6 +92,25 @@ The following characteristics are valid for all accessories:
     "model": "Motion 360 KNX",
 }
 ```
+
+### Contact sensor
+This sensor shows the open / closed state of a contact (door, window, generic ...).
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter    | Possible values | Mandatory | Description                      |
+|:-------------|:----------------|:----------|:---------------------------------|
+| ContactState | \<item>         | Yes       | SHNG item to monitor for contact |
+
+
+#### Example:
+```json
+{
+    "type": "ContactSensor",
+    "name": "Window kitchen",
+    "ContactState": "EG.Kueche.Fenster"
+}
+```
+
 ### Doorbell
 A doorbell is an accessory that simply sends a message to all devices enrolled in the home that someone rang the doorbell.
 HomeKit displays a message that "This accessory is not currently supported by the Home app.".
@@ -180,6 +199,25 @@ The above optional min and max parameters allow you to specify the neede range f
 }
 ```
 
+### Motion sensor
+This sensor is tripped if it detects motion in a room.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter      | Possible values | Mandatory | Description                     |
+|:---------------|:----------------|:----------|:--------------------------------|
+| MotionDetected | \<item>         | Yes       | SHNG item to monitor for motion |
+
+
+#### Example:
+```json
+{
+    "type": "MotionSensor",
+    "name": "Movement hallway",
+    "MotionDetected": "EG.Flur.Bewegung"
+}
+```
+
+
 ### Occupancy sensor
 This sensor is tripped if it detects presence in a room.
 
@@ -200,59 +238,6 @@ This sensor is tripped if it detects presence in a room.
 }
 ```
 
-### Motion sensor
-This sensor is tripped if it detects motion in a room.
-
-#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter      | Possible values | Mandatory | Description                     |
-|:---------------|:----------------|:----------|:--------------------------------|
-| MotionDetected | \<item>         | Yes       | SHNG item to monitor for motion |
-
-
-#### Example:
-```json
-{
-    "type": "MotionSensor",
-    "name": "Movement hallway",
-    "MotionDetected": "EG.Flur.Bewegung"
-}
-```
-
-### Contact sensor
-This sensor shows the open / closed state of a contact (door, window, generic ...).
-
-#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter    | Possible values | Mandatory | Description                      |
-|:-------------|:----------------|:----------|:---------------------------------|
-| ContactState | \<item>         | Yes       | SHNG item to monitor for contact |
-
-
-#### Example:
-```json
-{
-    "type": "ContactSensor",
-    "name": "Window kitchen",
-    "ContactState": "EG.Kueche.Fenster"
-}
-```
-
-### Switch
-This accessory can monitor and change the on/off state of something. It is very similar to an outlet.
-
-#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter | Possible values | Mandatory | Description                             |
-|:----------|:----------------|:----------|:----------------------------------------|
-| On        | \<item>         | Yes       | SHNG item to switch something on or off |
-
-
-#### Example:
-```json
-{
-    "type": "Switch",
-    "name": "Music living-room",
-    "On": "EG.Stube.Radio"
-}
-```
 
 ### Outlet
 This accessory can monitor and change the on/off state of a wall outlet. The outlet can be generic, a light, a fan, ...
@@ -302,6 +287,24 @@ Valid values for 'TargetState':
     "name": "Intrusion alarm",
     "currentState": "Technik.Alarmanlage.Status.Ist",
     "targetState": "Technik.Alarmanlage.Status.Soll"
+}
+```
+
+### Switch
+This accessory can monitor and change the on/off state of something. It is very similar to an outlet.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter | Possible values | Mandatory | Description                             |
+|:----------|:----------------|:----------|:----------------------------------------|
+| On        | \<item>         | Yes       | SHNG item to switch something on or off |
+
+
+#### Example:
+```json
+{
+    "type": "Switch",
+    "name": "Music living-room",
+    "On": "EG.Stube.Radio"
 }
 ```
 
