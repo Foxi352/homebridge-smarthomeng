@@ -29,7 +29,7 @@ export class Doorbell implements AccessoryPlugin {
                 .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.singlepress);
 
         this.platform.shng.addMonitor(accessory.contactstate, this.shngCallback.bind(this));
-        this.platform.log.info('ContactSensor', accessory.name, 'created!');
+        this.platform.log.info('Doorbell', accessory.name, 'created!');
     }
 
     identify(): void {

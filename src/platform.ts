@@ -21,6 +21,7 @@ import { Doorbell } from './Accessories/Doorbell';
 import { SecuritySystem } from './Accessories/SecuritySystem';
 import { OccupancySensor } from './Accessories/OccupancySensor';
 import { MotionSensor } from './Accessories/MotionSensor';
+import { GarageDoor } from './Accessories/GarageDoor';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -144,6 +145,11 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                     // WindowCovering
                     case 'windowcovering':
                         devices.push(new WindowCovering(this, accessory));
+                        break;
+
+                    // GarageDoor
+                    case 'garagedoor':
+                        devices.push(new GarageDoor(this, accessory));
                         break;
 
                     // Show error for (yet ?) unsupported device
