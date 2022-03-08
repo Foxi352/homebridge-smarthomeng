@@ -22,6 +22,7 @@ import { SecuritySystem } from './Accessories/SecuritySystem';
 import { OccupancySensor } from './Accessories/OccupancySensor';
 import { MotionSensor } from './Accessories/MotionSensor';
 import { GarageDoor } from './Accessories/GarageDoor';
+import { HumiditySensor } from './Accessories/HumiditySensor';
 
 function uncapitalizeKeys(obj): Record<string, unknown> {
     function isObject(o: unknown): boolean {
@@ -107,7 +108,7 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                         devices.push(new Doorbell(this, accessory));
                         break;
 
-                    // Doorbell
+                    // Security system
                     case 'securitysystem':
                         devices.push(new SecuritySystem(this, accessory));
                         break;
@@ -132,7 +133,7 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                         devices.push(new Fan(this, accessory));
                         break;
 
-                    // TemperatureSensor
+                    // Temperature sensor
                     case 'temperaturesensor':
                         devices.push(new TemperatureSensor(this, accessory));
                         break;
@@ -147,9 +148,14 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
                         devices.push(new WindowCovering(this, accessory));
                         break;
 
-                    // GarageDoor
+                    // Garage door
                     case 'garagedoor':
                         devices.push(new GarageDoor(this, accessory));
+                        break;
+
+                    // Humidity sensor
+                    case 'humiditysensor':
+                        devices.push(new HumiditySensor(this, accessory));
                         break;
 
                     // Show error for (yet ?) unsupported device
