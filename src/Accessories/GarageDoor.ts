@@ -21,12 +21,11 @@ export class GarageDoor implements AccessoryPlugin {
         this.deviceService = new this.platform.Service.GarageDoorOpener(accessory.name);
 
         // create handlers for required characteristics
-
         this.informationService =
             new this.platform.Service.AccessoryInformation()
                 .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.manufacturer)
                 .setCharacteristic(this.platform.Characteristic.Model, accessory.model)
-                .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.currentdoorstate); // FIXME
+                .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.currentdoorstate);
 
         if (accessory.currentdoorstate) {
             this.platform.shng.addMonitor(accessory.currentdoorstate, this.shngCurrentDoorStateCallback.bind(this));
@@ -34,7 +33,7 @@ export class GarageDoor implements AccessoryPlugin {
                 .onGet(this.getCurrentDoorState.bind(this))
                 .onSet(this.setCurrentDoorState.bind(this));
         } else {
-          this.platform.log.error('GarageDoor: missing \"currentdoorstate\" in config.json!');
+            this.platform.log.error('GarageDoor: missing \"currentdoorstate\" in config.json!');
         }
 
         if (accessory.targetdoorstate) {
@@ -43,7 +42,7 @@ export class GarageDoor implements AccessoryPlugin {
                 .onGet(this.getTargetDoorState.bind(this))
                 .onSet(this.setTargetDoorState.bind(this));
         } else {
-          this.platform.log.error('GarageDoor: missing \"targetdoorstate\" in config.json!');
+            this.platform.log.error('GarageDoor: missing \"targetdoorstate\" in config.json!');
         }
 
         if (accessory.obstructiondetected) {
@@ -66,8 +65,6 @@ export class GarageDoor implements AccessoryPlugin {
     }
 
     getCurrentDoorState(): Nullable<CharacteristicValue> {
-    //getCurrentDoorState(value: CharacteristicValue) {
-    //    this.currentDoorState = value as number;
         this.platform.log.info('getCurrentDoorState:', this.accessory.name, 'is currently', this.currentDoorState);
         return this.currentDoorState;
     }
@@ -79,8 +76,6 @@ export class GarageDoor implements AccessoryPlugin {
     }
 
     getTargetDoorState(): Nullable<CharacteristicValue> {
-    //getTargetDoorState(value: CharacteristicValue) {
-    //    this.targetDoorState = value as number;
         this.platform.log.info('getTargetDoorState:', this.accessory.name, 'is currently', this.targetDoorState);
         return this.targetDoorState;
     }
