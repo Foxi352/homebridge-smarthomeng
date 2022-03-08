@@ -19,6 +19,8 @@ This plugin currently supports the following services (and characteristics):
 | [ContactSensor](#contact-sensor)         | Simple contact sensor, for example for windows          |
 | [Doorbell](#doorbell)                    | Doorbell, sends message to devices on ring              |
 | [Fan](#fan)                              | Simple on/off fan, may be extended in future            |
+| [GarageDoor](#garage-door)               | Garage door opener                                      |
+| [HumiditySensor](#humidity-sensor)       | Humidity sensor                                         |
 | [Lightbulb](#lightbulb)                  | Everything, from simple light to dimmable, RGB and RGBW |
 | [MotionSensor](#motion-sensor)           | Detects and reports motion                              |
 | [OccupancySensor](#occupancy-sensor)     | Detects presence in a room                              |
@@ -28,7 +30,6 @@ This plugin currently supports the following services (and characteristics):
 | [TemperatureSensor](#temperature-sensor) | Temperature sensor                                      |
 | [Thermostat](#thermostat)                | Thermostat with temperature sensor and heating state    |
 | [WindowCovering](#window-covering)       | Window covering (shutters, blinds, ...)                 |
-| [GarageDoor](#garage-door)               | Garage door opener                                      |
 
 Other accessories are being worked on and will be added as soon as ready.
 
@@ -153,6 +154,60 @@ For now this accessory only supports turning the fan on and off. Further improve
     "type": "Fan",
     "name": "Fan bathroom",
     "Active": "OG.Bad.Ventilator"
+}
+```
+
+### Garage Door
+This accessory is used for opening/closing garage doors or any other automatic gate. 
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter                  | Possible values | Mandatory | Default | Description                                                       |
+|:---------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
+| CurrentDoorState           | \<item>         | Yes       |         | SHNG item to monitor the current door state                       |
+| TargetDoorState            | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
+| ObstructionDetected        | \<item>         | No        |         | SHNG item to monitor if the door is blocked                       |
+
+#### Additional comments
+ 
+Valid values for 'CurrentDoorState':
+* OPEN = 0
+* CLOSED = 1
+* OPENING = 2
+* CLOSING = 3
+* STOPPED = 4
+
+Valid values for 'TargetDoorState':
+* OPEN = 0
+* CLOSED = 1
+
+'ObstructionDetected' may be set 'true' if there is any physical problem opening/closing the door.
+
+#### Example
+```json
+{
+    "type": "GarageDoor",
+    "name": "GarageRechts",
+    "currentdoorstate": "garage.rechts.cds",
+    "targetdoorstate": "garage.rechts.tds",
+    "obstructiondetected": "garage.rechts.od"
+}
+```
+
+### Humidity sensor
+This accessory shows the current relative humidity in %.
+
+#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
+| Parameter          | Possible values | Mandatory | Description                                    |
+|:-------------------|:----------------|:----------|:-----------------------------------------------|
+| CurrentHumidity    | \<item>         | Yes       | SHNG item to monitor relative humidity in %    |
+
+
+#### Example:
+```json
+{
+    "type": "HumiditySensor",
+    "name": "Luftfeuchtigkeit Glashaus",
+    "CurrentHumidity": "Glashaus.Luftfeuchtigkeit"
 }
 ```
 
@@ -318,7 +373,7 @@ This accessory can monitor and change the on/off state of something. It is very 
 ```
 
 ### Temperature sensor
-This sensor show the actual temperature.
+This sensor shows the actual temperature.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter          | Possible values | Mandatory | Description                          |
@@ -397,32 +452,6 @@ The above optional parameters allow you to specify the neede range for your devi
     "TargetPositionMin": 0,
     "TargetPositionMax": 255,
     "TargetPositionInverted": true
-}
-```
-
-### Garage Door
-This accessory type can be used for opening/closing garage doors or any automatic gates. 
-
-#### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter                  | Possible values | Mandatory | Default | Description                                                       |
-|:---------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
-| CurrentDoorState           | \<item>         | Yes       |         | SHNG item to monitor the current door state                       |
-| TargetDoorState            | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
-| ObstructionDetected        | \<item>         | No        |         | SHNG item to monitor if the door is blocked                       |
-
-#### Additional comments
-
-CurrentDoorState can be OPEN, CLOSED, OPENING, CLOSING and STOPPED. TargetDoorState can be OPEN or CLOSED.
-ObstructionDetected can be set to true if there is a physical problem opening/closing the door.
-
-#### Example
-```json
-{
-    "type": "GarageDoor",
-    "name": "GarageRechts",
-    "currentdoorstate": "garage.rechts.cds",
-    "targetdoorstate": "garage.rechts.tds",
-    "obstructiondetected": "garage.rechts.od"
 }
 ```
 
