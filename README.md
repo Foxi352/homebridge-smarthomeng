@@ -194,12 +194,12 @@ Valid values for 'TargetDoorState':
 ```
 
 ### Humidity sensor
-This accessory is used for showing the current humidity value.
+This accessory shows the current relative humidity in %.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter          | Possible values | Mandatory | Description                          |
-|:-------------------|:----------------|:----------|:-------------------------------------|
-| CurrentHumidity    | \<item>         | Yes       | SHNG item to monitor humidity        |
+| Parameter          | Possible values | Mandatory | Description                                    |
+|:-------------------|:----------------|:----------|:-----------------------------------------------|
+| CurrentHumidity    | \<item>         | Yes       | SHNG item to monitor relative humidity in %    |
 
 
 #### Example:
@@ -373,7 +373,7 @@ This accessory can monitor and change the on/off state of something. It is very 
 ```
 
 ### Temperature sensor
-This sensor show the actual temperature.
+This sensor shows the actual temperature.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
 | Parameter          | Possible values | Mandatory | Description                          |
