@@ -72,7 +72,7 @@ export class Fan implements AccessoryPlugin {
     }
 
     shngActiveCallback(value: unknown): void {
-        this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+        this.platform.log.debug('shngActiveCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'boolean') {
             this.active = value;
             this.deviceService.updateCharacteristic(this.platform.Characteristic.Active, this.active);
@@ -82,7 +82,7 @@ export class Fan implements AccessoryPlugin {
     }
 
     shngRotationSpeedCallback(value: unknown): void {
-        this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+        this.platform.log.debug('shngRotationSpeedCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'number') {
             this.rotationSpeed = value;
             this.deviceService.updateCharacteristic(this.platform.Characteristic.RotationSpeed, this.rotationSpeed);
