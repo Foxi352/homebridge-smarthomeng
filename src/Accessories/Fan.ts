@@ -1,3 +1,4 @@
+import { Int16 } from 'hap-nodejs';
 import {
     AccessoryPlugin,
     CharacteristicValue,
@@ -13,6 +14,7 @@ export class Fan implements AccessoryPlugin {
 
     public name: string;
     private active = false;
+    private rotationSpeed = 100;
 
     constructor(private readonly platform: SmartHomeNGPlatform, private readonly accessory) {
         this.name = accessory.name;
@@ -22,14 +24,20 @@ export class Fan implements AccessoryPlugin {
         this.deviceService.getCharacteristic(this.platform.Characteristic.Active)
             .onGet(this.getActive.bind(this))
             .onSet(this.setActive.bind(this));
+        this.platform.shng.addMonitor(accessory.active, this.shngActiveCallback.bind(this));
+
+        if (accessory.rotationspeed) {
+            this.deviceService.getCharacteristic(this.platform.Characteristic.RotationSpeed)
+                .onGet(this.getRotationSpeed.bind(this))
+                .onSet(this.setRotationSpeed.bind(this));
+            this.platform.shng.addMonitor(accessory.rotationspeed, this.shngRotationSpeedCallback.bind(this));
+        }
 
         this.informationService =
             new this.platform.Service.AccessoryInformation()
                 .setCharacteristic(this.platform.Characteristic.Manufacturer, accessory.manufacturer)
                 .setCharacteristic(this.platform.Characteristic.Model, accessory.model)
                 .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.active);
-
-        this.platform.shng.addMonitor(accessory.active, this.shngCallback.bind(this));
         this.platform.log.info("Fan '%s' created!", accessory.name);
     }
 
@@ -52,11 +60,32 @@ export class Fan implements AccessoryPlugin {
         this.platform.shng.setItem(this.accessory.active, this.active);
     }
 
-    shngCallback(value: unknown): void {
+    getRotationSpeed(): Nullable<CharacteristicValue> {
+        this.platform.log.info('getRotationSpeed:', this.accessory.name, 'is currently', this.rotationSpeed);
+        return this.rotationSpeed;
+    }
+
+    setRotationSpeed(value: CharacteristicValue) {
+        this.rotationSpeed = value as number;
+        this.platform.log.info('setRotationSpeed:', this.accessory.name, 'was set to', this.rotationSpeed);
+        this.platform.shng.setItem(this.accessory.rotationspeed, this.rotationSpeed);
+    }
+
+    shngActiveCallback(value: unknown): void {
         this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
         if (typeof value === 'boolean') {
             this.active = value;
             this.deviceService.updateCharacteristic(this.platform.Characteristic.Active, this.active);
+        } else {
+            this.platform.log.warn('Unknown type ', typeof value, 'received for', this.accessory.name + ':', value);
+        }
+    }
+
+    shngRotationSpeedCallback(value: unknown): void {
+        this.platform.log.debug('shngCallback:', this.accessory.name, '=', value, '(' + typeof value + ')');
+        if (typeof value === 'number') {
+            this.rotationSpeed = value;
+            this.deviceService.updateCharacteristic(this.platform.Characteristic.RotationSpeed, this.rotationSpeed);
         } else {
             this.platform.log.warn('Unknown type ', typeof value, 'received for', this.accessory.name + ':', value);
         }
