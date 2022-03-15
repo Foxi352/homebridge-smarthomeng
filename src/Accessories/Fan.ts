@@ -1,4 +1,3 @@
-import { Int16 } from 'hap-nodejs';
 import {
     AccessoryPlugin,
     CharacteristicValue,
