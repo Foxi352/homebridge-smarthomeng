@@ -141,9 +141,10 @@ Further investigation is needed, but for now it still works.
 For now this accessory only supports turning the fan on and off. Further improvements are possible, but i don't have the needed hardware for testing.
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter | Possible values | Mandatory | Description                            |
-|:----------|:----------------|:----------|:---------------------------------------|
-| Active    | \<item>         | Yes       | SHNG item to set and get the fan state |
+| Parameter     | Possible values | Mandatory | Description                                     |
+|:--------------|:----------------|:----------|:------------------------------------------------|
+| Active        | \<item>         | Yes       | SHNG item to set and get the fan state.         |
+| RotationSpeed | \<item>         | No        | SHNG item to set and get the fan rotation speed |
 
 #### Example:
 
