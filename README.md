@@ -30,32 +30,15 @@ This plugin currently supports the following services (and characteristics):
 | [Thermostat](#thermostat)                | Thermostat with temperature sensor and heating state    |
 | [WindowCovering](#window-covering)       | Window covering (shutters, blinds, ...)                 |
 
-Other accessories are being worked on and will be added as soon as ready.
 
 ## Requirements
 * [SmartHomeNG](https://github.com/smarthomeNG/smarthome)
-* [homebridge](https://www.npmjs.com/package/homebridge)
+* [Node.js >=14.18.1](https://nodejs.org/en/)
+* [Homebridge](https://homebridge.io)
 
-## Installation
-### Install nodejs >=14.18.1
-See [NodeJS](https://nodejs.org/en/) website for details depending on your OS.
+## Installation of plugin
 
-### Install libavahi-compat-libdnssd-dev lib
-For me i needed these libraries to be installed for my homebridge to work. See their [Homepage](https://homebridge.io) for installation instructions.  
-Below is what i did on my Debian Bullseye installation:
-
-
-	sudo apt install libavahi-compat-libdnssd-dev
-
-
-### Install homebridge >=1.3.5 from NPM repository
-
-	npm install -g homebridge --unsafe-perm
-
-
-### Install this plugin from NPM repository
-
-	npm install -g homebridge-smarthomeng --unsafe-perm
+Use [Homebridge Config UI X](https://github.com/oznu/homebridge-config-ui-x#readme) or install manually using ```npm install -g homebridge-smarthomeng```
 
 
 ## Configuration
@@ -64,13 +47,13 @@ If you already have a working homebridge installation just add the platform sect
 ### Platform configuration
 The following parameters are available to configure the plugin as platform in homebridge.
 
-| Parameter | Possible values                        | Mandatory | Description                                         |
-|:----------|:---------------------------------------|:----------|:----------------------------------------------------|
-| platform  | Any \<string>                          | Yes       | Internal name of your platform                      |
-| name      | Any \<string>                          | Yes       | Visible name in HomeKit                             |
-| host      | IP address or FQDN of your SHNG server | Yes       | Your SHNG host                                      |
-| port      | Port \<number>                         | No        | Listening port of websocket module. Default is 2424 |
-| tls       | \<boolean>                             | No        | Should TLS encryption be used. Defaults is 'false'  |
+| Parameter | Possible values                        | Mandatory | Default | Description                         |
+|:----------|:---------------------------------------|:----------|:--------|:------------------------------------|
+| platform  | Any \<string>                          | Yes       |         | Internal name of your platform      |
+| name      | Any \<string>                          | Yes       |         | Visible name in HomeKit             |
+| host      | IP address or FQDN of your SHNG server | Yes       |         | Your SHNG host                      |
+| port      | Port \<number>                         | No        | 2424    | Listening port of websocket module. |
+| tls       | \<boolean>                             | No        | False   | Should TLS encryption be used.      |
 
 #### Example configuration:
 ```json
@@ -161,11 +144,11 @@ For now this accessory only supports turning the fan on and off. Further improve
 This accessory is used for opening/closing garage doors or any other automatic gate. 
 
 #### Characteristics in addition to [common characteristics](#common-accessories-characteristics) 
-| Parameter                  | Possible values | Mandatory | Default | Description                                                       |
-|:---------------------------|:----------------|:----------|:--------|:------------------------------------------------------------------|
-| CurrentDoorState           | \<item>         | Yes       |         | SHNG item to monitor the current door state                       |
-| TargetDoorState            | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
-| ObstructionDetected        | \<item>         | No        |         | SHNG item to monitor if the door is blocked                       |
+| Parameter           | Possible values | Mandatory | Description                                                       |
+|:--------------------|:----------------|:----------|:------------------------------------------------------------------|
+| CurrentDoorState    | \<item>         | Yes       | SHNG item to monitor the current door state                       |
+| TargetDoorState     | \<item>         | Yes       | SHNG item to monitor and set the target position                  |
+| ObstructionDetected | \<item>         | No        | SHNG item to monitor if the door is blocked                       |
 
 #### Additional comments
  
