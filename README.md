@@ -1,11 +1,11 @@
 # homebridge-smarthomeng
 
 [![npm](https://badgen.net/npm/v/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm](https://badgen.net/badge/homebridge/>=1.3.5/green)](https://www.npmjs.com/package/homebridge-smarthomeng)
 [![npm](https://badgen.net/npm/node/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
 [![npm](https://badgen.net/npm/dt/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
 [![npm](https://badgen.net/npm/dm/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 
 **Version v2 is a complete rewrite from scratch and a breaking update.**  
 You need to adapt your [`config.json`](#example-configuration-file) !
