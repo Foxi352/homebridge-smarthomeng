@@ -75,97 +75,100 @@ export class SmartHomeNGPlatform implements StaticPlatformPlugin {
 
         // convert all configured accessory keys to lowercase to tolerate user case errors
         const accessories = JSON.parse(JSON.stringify(uncapitalizeKeys(this.config.accessories)));
-
-        for (const accessory of accessories) {
-            if (!accessory.manufacturer) {
-                accessory.manufacturer = 'SmartHomeNG';
-            }
-            if (!accessory.model) {
-                accessory.model = 'SHNG Item';
-            }
-
-            if (accessory.type !== '') {
-                this.log.info('Parsing accessory:', accessory.name, 'of type', accessory.type);
-                // set lo lowercase to ignore user case errors
-                switch (accessory.type.toLowerCase()) {
-
-                    // Presence sensor
-                    case 'occupancysensor':
-                        devices.push(new OccupancySensor(this, accessory));
-                        break;
-                    // Motion sensor
-                    case 'motionsensor':
-                        devices.push(new MotionSensor(this, accessory));
-                        break;
-
-                    // Contact sensor
-                    case 'contactsensor':
-                        devices.push(new ContactSensor(this, accessory));
-                        break;
-
-                    // Doorbell
-                    case 'doorbell':
-                        devices.push(new Doorbell(this, accessory));
-                        break;
-
-                    // Security system
-                    case 'securitysystem':
-                        devices.push(new SecuritySystem(this, accessory));
-                        break;
-
-                    // Switch
-                    case 'switch':
-                        devices.push(new Switch(this, accessory));
-                        break;
-
-                    // Lightbulb
-                    case 'lightbulb':
-                        devices.push(new Lightbulb(this, accessory));
-                        break;
-
-                    // Outlet
-                    case 'outlet':
-                        devices.push(new Outlet(this, accessory));
-                        break;
-
-                    // Fan (uses Fanv2)
-                    case 'fan':
-                        devices.push(new Fan(this, accessory));
-                        break;
-
-                    // Temperature sensor
-                    case 'temperaturesensor':
-                        devices.push(new TemperatureSensor(this, accessory));
-                        break;
-
-                    // Thermostat
-                    case 'thermostat':
-                        devices.push(new Thermostat(this, accessory));
-                        break;
-
-                    // WindowCovering
-                    case 'windowcovering':
-                        devices.push(new WindowCovering(this, accessory));
-                        break;
-
-                    // Garage door
-                    case 'garagedoor':
-                        devices.push(new GarageDoor(this, accessory));
-                        break;
-
-                    // Humidity sensor
-                    case 'humiditysensor':
-                        devices.push(new HumiditySensor(this, accessory));
-                        break;
-
-                    // Show error for (yet ?) unsupported device
-                    default:
-                        this.log.warn('Accessory type', accessory.type, 'for', accessory.name, 'not recognized !');
-                        break;
+        this.log.debug(accessories);
+        if (Object.keys(accessories).length > 0) {
+            for (const accessory of accessories) {
+                if (!accessory.manufacturer) {
+                    accessory.manufacturer = 'SmartHomeNG';
                 }
-            } else {
-                this.log.warn('Ignoring accessory (no type given): ' + accessory);
+                if (!accessory.model) {
+                    accessory.model = 'SHNG Item';
+                }
+
+                if (accessory.type !== '') {
+                    this.log.info('Parsing accessory:', accessory.name, 'of type', accessory.type);
+                    // set lo lowercase to ignore user case errors
+                    switch (accessory.type.toLowerCase()) {
+
+                        // Presence sensor
+                        case 'occupancysensor':
+                            devices.push(new OccupancySensor(this, accessory));
+                            break;
+                        // Motion sensor
+                        case 'motionsensor':
+                            devices.push(new MotionSensor(this, accessory));
+                            break;
+
+                        // Contact sensor
+                        case 'contactsensor':
+                            devices.push(new ContactSensor(this, accessory));
+                            break;
+
+                        // Doorbell
+                        case 'doorbell':
+                            devices.push(new Doorbell(this, accessory));
+                            break;
+
+                        // Security system
+                        case 'securitysystem':
+                            devices.push(new SecuritySystem(this, accessory));
+                            break;
+
+                        // Switch
+                        case 'switch':
+                            devices.push(new Switch(this, accessory));
+                            break;
+
+                        // Lightbulb
+                        case 'lightbulb':
+                            devices.push(new Lightbulb(this, accessory));
+                            break;
+
+                        // Outlet
+                        case 'outlet':
+                            devices.push(new Outlet(this, accessory));
+                            break;
+
+                        // Fan (uses Fanv2)
+                        case 'fan':
+                            devices.push(new Fan(this, accessory));
+                            break;
+
+                        // Temperature sensor
+                        case 'temperaturesensor':
+                            devices.push(new TemperatureSensor(this, accessory));
+                            break;
+
+                        // Thermostat
+                        case 'thermostat':
+                            devices.push(new Thermostat(this, accessory));
+                            break;
+
+                        // WindowCovering
+                        case 'windowcovering':
+                            devices.push(new WindowCovering(this, accessory));
+                            break;
+
+                        // Garage door
+                        case 'garagedoor':
+                            devices.push(new GarageDoor(this, accessory));
+                            break;
+
+                        // Humidity sensor
+                        case 'humiditysensor':
+                            devices.push(new HumiditySensor(this, accessory));
+                            break;
+
+                        // Show error for (yet ?) unsupported device
+                        default:
+                            this.log.warn('Accessory type', accessory.type, 'for', accessory.name, 'not recognized !');
+                            break;
+                    }
+                } else {
+                    this.log.warn('Ignoring accessory (no type given): ' + accessory);
+                }
             }
+
         }
         callback(devices);
         this.log.debug('Finished building accessories list');
