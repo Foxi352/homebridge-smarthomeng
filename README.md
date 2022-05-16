@@ -1,6 +1,7 @@
 # homebridge-smarthomeng
 
 [![npm](https://badgen.net/npm/v/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![npm](https://badgen.net/badge/homebridge/>=1.3.5/green)](https://www.npmjs.com/package/homebridge-smarthomeng)
 [![npm](https://badgen.net/npm/node/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
 [![npm](https://badgen.net/npm/dt/homebridge-smarthomeng)](https://www.npmjs.com/package/homebridge-smarthomeng)
@@ -406,9 +407,11 @@ This accessory type can be used for shutters or blinds. Because the differnce be
 | TargetPosition             | \<item>         | Yes       |         | SHNG item to monitor and set the target position                  |
 | CurrentPositionMin         | \<number>       | No        | 0       | Your device's minimum value for current position                  |
 | CurrentPositionMax         | \<number>       | No        | 100     | Your device's maximum value for current position                  |
+| CurrentPositionDecimals    | \<number>       | No        | 0       | Number of decimals to round to                                    |
 | CurrentPositionInverted    | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
 | TargetPositionMin          | \<number>       | No        | 0       | Your device's minimum value for target position                   |
 | TargetPositionMax          | \<number>       | No        | 100     | Your device's maximum value for target position                   |
+| TargetPositionDecimals     | \<number>       | No        | 0       | Number of decimals to round to                                    |
 | TargetPositionInverted     | \<boolean>      | No        | false   | Should the values be inverted, ex: 0 for Homekit = 100 for device |
 | CurrentHorizontalTiltAngle | \<item>         | No        |         | SHNG item to monitor current horizontal tilt angle                |       
 | TargetHorizontalTiltAngle  | \<item>         | No        |         | SHNG item to monitor and set the target horizontal tilt angle     |

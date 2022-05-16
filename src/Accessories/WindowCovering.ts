@@ -12,8 +12,10 @@ export class WindowCovering implements AccessoryPlugin {
     private readonly informationService: Service;
 
     public name: string;
-    private currentPosition = 0; private currentPositionMin = 0; private currentPositionMax = 100; private currentPositionInverted = false;
-    private targetPosition = 0; private targetPositionMin = 0; private targetPositionMax = 100; private targetPositionInverted = false;
+    private currentPosition = 0; private currentPositionMin = 0; private currentPositionMax = 100;
+    private currentPositionDecimals = 0; private currentPositionInverted = false;
+    private targetPosition = 0; private targetPositionMin = 0; private targetPositionMax = 100;
+    private targetPositionDecimals = 0; private targetPositionInverted = false;
     private positionState = this.platform.Characteristic.PositionState.STOPPED;
     private currentHorizontalTiltAngle = 0; private targetHorizontalTiltAngle = 0;
     private currentVerticalTiltAngle = 0; private targetVerticalTiltAngle = 0;
@@ -70,9 +72,11 @@ export class WindowCovering implements AccessoryPlugin {
 
         this.currentPositionMax = accessory.currentpositionmax ? accessory.currentpositionmax : this.currentPositionMax;
         this.currentPositionMin = accessory.currentpositionmin ? accessory.currentpositionmin : this.currentPositionMin;
+        this.currentPositionDecimals = accessory.currentpositiondecimals ? accessory.currentpositiondecimals : this.currentPositionDecimals;
         this.currentPositionInverted = accessory.currentpositioninverted ? accessory.currentpositioninverted : this.currentPositionInverted;
         this.targetPositionMax = accessory.targetpositionmax ? accessory.targetpositionmax : this.targetPositionMax;
         this.targetPositionMin = accessory.targetpositionmin ? accessory.targetpositionmin : this.targetPositionMin;
+        this.targetPositionDecimals = accessory.targetpositiondecimals ? accessory.targetpositiondecimals : this.targetPositionDecimals;
         this.targetPositionInverted = accessory.targetpositioninverted ? accessory.targetpositioninverted : this.targetPositionInverted;
         this.platform.log.info("WindowCovering '%s' created!", accessory.name);
     }
@@ -107,7 +111,7 @@ export class WindowCovering implements AccessoryPlugin {
             value as number,
             0, 100,
             this.targetPositionMin, this.targetPositionMax,
-            this.targetPositionInverted,
+            this.targetPositionDecimals, this.targetPositionInverted,
         );
         this.platform.shng.setItem(this.accessory.targetposition, transposedTarget);
     }
@@ -152,7 +156,7 @@ export class WindowCovering implements AccessoryPlugin {
                 value as number,
                 this.currentPositionMin, this.currentPositionMax,
                 0, 100,
-                this.currentPositionInverted,
+                0, this.currentPositionInverted,
             );
             this.deviceService.updateCharacteristic(this.platform.Characteristic.CurrentPosition, this.currentPosition);
         } else {
@@ -169,7 +173,7 @@ export class WindowCovering implements AccessoryPlugin {
                 value as number,
                 this.targetPositionMin, this.targetPositionMax,
                 0, 100,
-                this.targetPositionInverted,
+                0, this.targetPositionInverted,
             );
             this.deviceService.updateCharacteristic(this.platform.Characteristic.TargetPosition, this.targetPosition);
         } else {
@@ -235,9 +239,14 @@ export class WindowCovering implements AccessoryPlugin {
         );
     }
 
-    convertRange(value: number, oldmin: number, oldmax: number, newmin: number, newmax: number, inverted: boolean): number {
+    // eslint-disable-next-line max-len
+    convertRange(value: number, oldmin: number, oldmax: number, newmin: number, newmax: number, decimals: number, inverted: boolean): number {
         let result = (((value - oldmin) * (newmax - newmin)) / (oldmax - oldmin)) + newmin;
-        result = Math.round(result);
+        if(decimals > 0) {
+            result = parseFloat(result.toFixed(decimals));
+        } else {
+            result = Math.round(result);
+        }
         if (inverted) {
             result = newmax - result;
         }
@@ -246,6 +255,7 @@ export class WindowCovering implements AccessoryPlugin {
             'from range', oldmin, '-', oldmax,
             'to', newmin, '-', newmax,
             'with inverted', inverted,
+            'and', decimals, 'decimals',
             '=', result,
         );
         return result;
